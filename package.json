@@ -1,0 +1,17 @@
+{
+  "name": "mangaden",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:api": "pnpm --filter @mangaden/api dev",
+    "dev:web": "pnpm --filter @mangaden/web dev",
+    "build:api": "pnpm --filter @mangaden/api build",
+    "build:web": "pnpm --filter @mangaden/web build",
+    "db:generate": "pnpm --filter @mangaden/api db:generate",
+    "db:migrate": "pnpm --filter @mangaden/api db:migrate",
+    "db:studio": "pnpm --filter @mangaden/api db:studio"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
