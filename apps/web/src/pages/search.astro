@@ -1,0 +1,319 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import MangaCard from "../components/MangaCard.astro";
+import { api } from "../lib/api";
+
+// Get query params
+const url = new URL(Astro.request.url);
+const query = url.searchParams.get("q") || "";
+const type = url.searchParams.get("type");
+const status = url.searchParams.get("status");
+
+// Fetch manga with search
+let results: any[] = [];
+let error: string | null = null;
+
+if (query) {
+  try {
+    const res = await api.getManga({
+      search: query,
+      type: type || undefined,
+      status: status || undefined,
+      limit: 50,
+    });
+    
+    if (res.success && res.data) {
+      results = res.data;
+    }
+  } catch (e) {
+    console.error("Search failed:", e);
+    error = "Search failed";
+  }
+}
+
+const types = ["manga", "manhwa", "manhua", "webtoon"];
+const statuses = ["ongoing", "completed", "hiatus"];
+---
+
+<BaseLayout title={query ? `Search: ${query}` : "Search"}>
+  <Navbar />
+  
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">
+          <span class="gradient-text">Search</span> Manga
+        </h1>
+      </header>
+      
+      {/* Search Form */}
+      <form class="search-form" action="/search" method="GET">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input 
+            type="text" 
+            name="q" 
+            value={query}
+            placeholder="Search by title..." 
+            class="search-input"
+            autofocus
+          />
+          <button type="submit" class="search-btn">Search</button>
+        </div>
+        
+        {/* Filters */}
+        <div class="filters">
+          <div class="filter-group">
+            <label>Type</label>
+            <select name="type" class="filter-select">
+              <option value="">All Types</option>
+              {types.map((t) => (
+                <option value={t} selected={type === t}>{t}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label>Status</label>
+            <select name="status" class="filter-select">
+              <option value="">All Status</option>
+              {statuses.map((s) => (
+                <option value={s} selected={status === s}>{s}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </form>
+      
+      {/* Results */}
+      {error ? (
+        <div class="error-banner">
+          <p>⚠️ {error}</p>
+        </div>
+      ) : query ? (
+        results.length > 0 ? (
+          <>
+            <p class="results-count">{results.length} result{results.length !== 1 ? 's' : ''} for "{query}"</p>
+            <div class="manga-grid">
+              {results.map((manga) => (
+                <MangaCard
+                  slug={manga.slug}
+                  title={manga.title}
+                  coverUrl={manga.coverUrl || "https://placehold.co/300x400/1a1a24/8b5cf6?text=No+Cover"}
+                  type={manga.type}
+                  status={manga.status}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div class="empty-state">
+            <p>No results found for "{query}"</p>
+            <p class="hint">Try a different search term</p>
+          </div>
+        )
+      ) : (
+        <div class="empty-state">
+          <p>Enter a search term to find manga</p>
+        </div>
+      )}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .main {
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+  
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  .search-form {
+    margin-bottom: 2rem;
+  }
+  
+  .search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-full);
+    padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: border-color 0.2s;
+  }
+  
+  .search-input-wrapper:focus-within {
+    border-color: var(--color-accent);
+  }
+  
+  .search-icon {
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+  
+  .search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .search-input::placeholder {
+    color: var(--color-text-muted);
+  }
+  
+  .search-btn {
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-full);
+    transition: transform 0.2s;
+  }
+  
+  .search-btn:hover {
+    transform: scale(1.02);
+  }
+  
+  .filters {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+  
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .filter-group label {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+  }
+  
+  .filter-select {
+    background: var(--color-bg-tertiary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    padding: 0.5rem 1rem;
+    text-transform: capitalize;
+  }
+  
+  .results-count {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+  }
+  
+  .manga-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .manga-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+  }
+  
+  .error-banner {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    text-align: center;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--color-text-muted);
+  }
+  
+  .hint {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  @media (max-width: 768px) {
+    .main {
+      padding-top: 60px;
+      padding-bottom: 80px;
+    }
+    
+    .page-title {
+      font-size: 1.75rem;
+    }
+    
+    .search-input-wrapper {
+      flex-wrap: wrap;
+      padding: 0.75rem;
+      border-radius: var(--radius-lg);
+    }
+    
+    .search-icon {
+      display: none;
+    }
+    
+    .search-input {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.5rem;
+    }
+    
+    .search-btn {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.875rem;
+    }
+    
+    .filters {
+      flex-direction: row;
+      gap: 0.75rem;
+    }
+    
+    .filter-group {
+      flex: 1;
+    }
+    
+    .filter-select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .manga-grid {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+    
+    .empty-state {
+      padding: 2rem;
+    }
+    
+    .results-count {
+      font-size: 0.875rem;
+      text-align: center;
+    }
+  }
+</style>

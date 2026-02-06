@@ -1,0 +1,123 @@
+---
+interface Props {
+  slug: string;
+  title: string;
+  coverUrl: string;
+  type: "manga" | "manhwa" | "manhua" | "webtoon";
+  status: "ongoing" | "completed" | "hiatus";
+  latestChapter?: number;
+}
+
+const { slug, title, coverUrl, type, status, latestChapter } = Astro.props;
+
+const statusColors = {
+  ongoing: "#22c55e",
+  completed: "#8b5cf6",
+  hiatus: "#f59e0b",
+};
+---
+
+<a href={`/comic/${slug}`} class="manga-card">
+  <div class="card-image">
+    <img src={coverUrl} alt={title} loading="lazy" />
+    <div class="card-overlay">
+      <span class="type-badge">{type}</span>
+      {latestChapter && (
+        <span class="chapter-badge">Ch. {latestChapter}</span>
+      )}
+    </div>
+    <span class="status-dot" style={`background: ${statusColors[status]}`}></span>
+  </div>
+  <div class="card-content">
+    <h3 class="card-title">{title}</h3>
+  </div>
+</a>
+
+<style>
+  .manga-card {
+    display: block;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+  }
+  
+  .manga-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.15);
+  }
+  
+  .card-image {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+  }
+  
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+  
+  .manga-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+  
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0.75rem;
+    gap: 0.25rem;
+  }
+  
+  .type-badge {
+    align-self: flex-start;
+    background: var(--gradient-primary);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+  }
+  
+  .chapter-badge {
+    align-self: flex-start;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+  }
+  
+  .status-dot {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 8px currentColor;
+  }
+  
+  .card-content {
+    padding: 0.75rem;
+  }
+  
+  .card-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

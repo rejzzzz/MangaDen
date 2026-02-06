@@ -1,0 +1,383 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Navbar from "../../components/Navbar.astro";
+import { api } from "../../lib/api";
+
+const { slug } = Astro.params;
+
+let manga: any = null;
+let error: string | null = null;
+
+try {
+  const res = await api.getMangaBySlug(slug!);
+  if (res.success && res.data) {
+    manga = res.data;
+  } else {
+    error = "Manga not found";
+  }
+} catch (e) {
+  console.error("Failed to fetch manga:", e);
+  error = "Failed to load manga";
+}
+
+const statusColors: Record<string, string> = {
+  ongoing: "#22c55e",
+  completed: "#8b5cf6",
+  hiatus: "#f59e0b",
+  cancelled: "#ef4444",
+};
+---
+
+<BaseLayout title={manga?.title || "Not Found"}>
+  <Navbar />
+  
+  <main class="main">
+    {error ? (
+      <div class="error-container">
+        <h1>404</h1>
+        <p>{error}</p>
+        <a href="/">← Back to Home</a>
+      </div>
+    ) : (
+      <>
+        {/* Hero Banner */}
+        <div class="hero-banner">
+          <div class="banner-bg" style={`background-image: url(${manga.coverUrl})`}></div>
+          <div class="banner-overlay"></div>
+          
+          <div class="container hero-content">
+            <div class="cover-wrapper">
+              <img src={manga.coverUrl} alt={manga.title} class="cover-image" />
+            </div>
+            
+            <div class="manga-info">
+              <span class="type-badge">{manga.type}</span>
+              <h1 class="manga-title">{manga.title}</h1>
+              
+              <div class="meta-row">
+                <span class="status-badge" style={`background: ${statusColors[manga.status]}`}>
+                  {manga.status}
+                </span>
+                {manga.author && <span class="meta-item">✍️ {manga.author}</span>}
+                {manga.releaseYear && <span class="meta-item">📅 {manga.releaseYear}</span>}
+                <span class="meta-item">👁️ {(manga.viewCount / 1000).toFixed(0)}K views</span>
+              </div>
+              
+              {manga.description && (
+                <p class="description">{manga.description}</p>
+              )}
+              
+              {manga.chapters?.length > 0 && (
+                <a href={`/comic/${slug}/chapter/1`} class="read-btn">
+                  Start Reading
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Chapters List */}
+        <section class="chapters-section">
+          <div class="container">
+            <h2 class="section-title">Chapters</h2>
+            
+            {manga.chapters?.length > 0 ? (
+              <div class="chapters-grid">
+                {manga.chapters
+                  .sort((a: any, b: any) => b.number - a.number)
+                  .map((chapter: any) => (
+                    <a href={`/comic/${slug}/chapter/${chapter.number}`} class="chapter-card">
+                      <span class="chapter-number">Ch. {chapter.number}</span>
+                      <span class="chapter-title">{chapter.title || `Chapter ${chapter.number}`}</span>
+                      <span class="chapter-pages">{chapter.pageCount} pages</span>
+                    </a>
+                  ))}
+              </div>
+            ) : (
+              <div class="empty-state">
+                <p>No chapters available yet.</p>
+              </div>
+            )}
+          </div>
+        </section>
+      </>
+    )}
+  </main>
+</BaseLayout>
+
+<style>
+  .main {
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+  
+  .error-container {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .error-container h1 {
+    font-size: 4rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .error-container a {
+    color: var(--color-accent);
+  }
+  
+  .hero-banner {
+    position: relative;
+    padding: 3rem 0;
+    overflow: hidden;
+  }
+  
+  .banner-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px);
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
+  
+  .banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, var(--color-bg-primary) 100%);
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+  
+  .cover-wrapper {
+    flex-shrink: 0;
+  }
+  
+  .cover-image {
+    width: 200px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+  
+  .manga-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .type-badge {
+    align-self: flex-start;
+    background: var(--gradient-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+  }
+  
+  .manga-title {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: white;
+  }
+  
+  .meta-item {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+  }
+  
+  .description {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    max-width: 600px;
+  }
+  
+  .read-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    margin-top: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: fit-content;
+  }
+  
+  .read-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+  }
+  
+  .chapters-section {
+    padding: 2rem 0 4rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+  
+  .chapters-grid {
+    display: grid;
+    gap: 0.75rem;
+  }
+  
+  .chapter-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--radius-md);
+    transition: background 0.2s, transform 0.2s;
+  }
+  
+  .chapter-card:hover {
+    background: var(--color-bg-tertiary);
+    transform: translateX(4px);
+  }
+  
+  .chapter-number {
+    font-weight: 600;
+    color: var(--color-accent);
+    min-width: 60px;
+  }
+  
+  .chapter-title {
+    flex: 1;
+  }
+  
+  .chapter-pages {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-text-muted);
+  }
+  
+  @media (max-width: 768px) {
+    .main {
+      padding-top: 50px;
+      padding-bottom: 2rem;
+    }
+    
+    .hero-banner {
+      padding: 1.5rem 0;
+    }
+    
+    .hero-content {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .manga-info {
+      align-items: center;
+    }
+    
+    .meta-row {
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .meta-item {
+      font-size: 0.75rem;
+    }
+    
+    .description {
+      text-align: center;
+      font-size: 0.875rem;
+      padding: 0 1rem;
+    }
+    
+    .cover-image {
+      width: 140px;
+    }
+    
+    .manga-title {
+      font-size: 1.375rem;
+    }
+    
+    .read-btn {
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+    }
+    
+    .chapters-section {
+      padding: 1.5rem 0 4rem;
+    }
+    
+    .section-title {
+      font-size: 1.25rem;
+    }
+    
+    .chapter-card {
+      padding: 0.875rem 1rem;
+      gap: 0.75rem;
+    }
+    
+    .chapter-card:hover {
+      transform: none;
+    }
+    
+    .chapter-card:active {
+      background: var(--color-bg-tertiary);
+    }
+    
+    .chapter-number {
+      min-width: 50px;
+      font-size: 0.875rem;
+    }
+    
+    .chapter-title {
+      font-size: 0.875rem;
+    }
+    
+    .chapter-pages {
+      font-size: 0.75rem;
+    }
+  }
+</style>

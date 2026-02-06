@@ -1,0 +1,221 @@
+---
+
+---
+
+<section class="hero">
+  <div class="hero-bg">
+    <div class="gradient-orb orb-1"></div>
+    <div class="gradient-orb orb-2"></div>
+  </div>
+  
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Read <span class="gradient-text">Manga</span> & <span class="gradient-text">Manhwa</span>
+      <br />Online for Free
+    </h1>
+    <p class="hero-subtitle">
+      Discover thousands of manga, manhwa, and webtoons. 
+      Updated daily with the latest chapters.
+    </p>
+    <div class="hero-actions">
+      <a href="/browse" class="btn-primary">
+        Start Reading
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+      <a href="/popular" class="btn-secondary">Popular</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-value">10K+</span>
+        <span class="stat-label">Manga</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">500K+</span>
+        <span class="stat-label">Chapters</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">1M+</span>
+        <span class="stat-label">Readers</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 1.5rem 4rem;
+    overflow: hidden;
+  }
+  
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  
+  .gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: float 8s ease-in-out infinite;
+  }
+  
+  .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--color-accent);
+    top: 10%;
+    left: 20%;
+  }
+  
+  .orb-2 {
+    width: 300px;
+    height: 300px;
+    background: #ec4899;
+    bottom: 20%;
+    right: 20%;
+    animation-delay: -4s;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -30px); }
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+  }
+  
+  .hero-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    max-width: 500px;
+    margin: 0 auto 2rem;
+  }
+  
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--gradient-primary);
+    color: white;
+    font-weight: 600;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-bg-glass);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-weight: 600;
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
+    transition: background var(--transition-fast);
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    justify-content: center;
+  }
+  
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+  
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 70vh;
+      padding: 5rem 1rem 3rem;
+    }
+    
+    .orb-1, .orb-2 {
+      width: 200px;
+      height: 200px;
+    }
+    
+    .hero-subtitle {
+      font-size: 1rem;
+      padding: 0 1rem;
+    }
+    
+    .hero-actions {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      max-width: 280px;
+      justify-content: center;
+    }
+    
+    .hero-stats {
+      gap: 1.5rem;
+    }
+    
+    .stat-value {
+      font-size: 1.25rem;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+    }
+  }
+</style>

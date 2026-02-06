@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import MangaReader from "../../../../components/MangaReader";
+import { api } from "../../../../lib/api";
+
+// Get route params
+const { slug, chapter } = Astro.params;
+const chapterNumber = parseInt(chapter || "1");
+
+// Fetch manga and chapter data
+let mangaData: any = null;
+let chapterData: any = null;
+let error: string | null = null;
+
+try {
+  const mangaRes = await api.getMangaBySlug(slug!);
+  
+  if (!mangaRes.success || !mangaRes.data) {
+    error = "Manga not found";
+  } else {
+    mangaData = mangaRes.data;
+    
+    // Find the chapter
+    const targetChapter = mangaData.chapters?.find(
+      (ch: any) => ch.number === chapterNumber
+    );
+    
+    if (!targetChapter) {
+      error = `Chapter ${chapterNumber} not found`;
+    } else {
+      // Fetch chapter pages
+      const pagesRes = await api.getChapterPages(targetChapter.id);
+      if (pagesRes.success && pagesRes.data) {
+        chapterData = pagesRes.data;
+      }
+    }
+  }
+} catch (e) {
+  console.error("Failed to fetch:", e);
+  error = "Failed to load chapter";
+}
+---
+
+<BaseLayout title={mangaData ? `${mangaData.title} - Chapter ${chapterNumber}` : "Reader"}>
+  {error ? (
+    <div class="error-container">
+      <h1>Error</h1>
+      <p>{error}</p>
+      <a href="/">← Back to Home</a>
+    </div>
+  ) : (
+    <MangaReader
+      client:load
+      mangaSlug={slug!}
+      mangaTitle={mangaData.title}
+      chapterNumber={chapterNumber}
+      chapterTitle={chapterData?.title}
+      pages={chapterData?.pages || []}
+      totalChapters={mangaData.chapters?.length || 1}
+    />
+  )}
+</BaseLayout>
+
+<style>
+  .error-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .error-container h1 {
+    font-size: 2rem;
+    color: var(--color-error);
+  }
+  
+  .error-container a {
+    color: var(--color-accent);
+  }
+</style>

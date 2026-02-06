@@ -1,0 +1,152 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Navbar from "../components/Navbar.astro";
+import MangaCard from "../components/MangaCard.astro";
+import { api } from "../lib/api";
+
+// Fetch latest manga (sorted by update time)
+let mangaList: any[] = [];
+let error: string | null = null;
+
+try {
+  const res = await api.getManga({ limit: 24 });
+  
+  if (res.success && res.data) {
+    // Sort by updatedAt descending (most recent first)
+    mangaList = [...res.data].sort((a, b) => 
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    );
+  }
+} catch (e) {
+  console.error("Failed to fetch manga:", e);
+  error = "Failed to load manga";
+}
+---
+
+<BaseLayout title="Latest Updates">
+  <Navbar />
+  
+  <main class="main">
+    <div class="container">
+      <header class="page-header">
+        <h1 class="page-title">
+          <span class="gradient-text">Latest</span> Updates
+        </h1>
+        <p class="page-subtitle">Recently updated manga and manhwa</p>
+      </header>
+      
+      {error ? (
+        <div class="error-banner">
+          <p>⚠️ {error}</p>
+        </div>
+      ) : mangaList.length > 0 ? (
+        <div class="manga-grid">
+          {mangaList.map((manga) => (
+            <MangaCard
+              slug={manga.slug}
+              title={manga.title}
+              coverUrl={manga.coverUrl || "https://placehold.co/300x400/1a1a24/8b5cf6?text=No+Cover"}
+              type={manga.type}
+              status={manga.status}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>No manga found.</p>
+        </div>
+      )}
+    </div>
+  </main>
+  
+  <footer class="footer">
+    <div class="container">
+      <p>© 2024 MangaDen. All rights reserved.</p>
+    </div>
+  </footer>
+</BaseLayout>
+
+<style>
+  .main {
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+  
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  .page-subtitle {
+    color: var(--color-text-secondary);
+    margin-top: 0.5rem;
+  }
+  
+  .manga-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .manga-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+  }
+  
+  .error-banner {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    text-align: center;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--color-text-muted);
+  }
+  
+  .footer {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    padding-bottom: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+  
+  @media (max-width: 768px) {
+    .main {
+      padding-top: 60px;
+      padding-bottom: 2rem;
+    }
+    
+    .page-header {
+      margin-bottom: 1.5rem;
+    }
+    
+    .page-title {
+      font-size: 1.75rem;
+    }
+    
+    .page-subtitle {
+      font-size: 0.875rem;
+    }
+    
+    .manga-grid {
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+    
+    .empty-state {
+      padding: 2rem;
+    }
+  }
+</style>
