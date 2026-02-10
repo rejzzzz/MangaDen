@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { uploadImage } from "../lib/cloudinary.js";
+import { uploadImage } from "../lib/cloudinary";
 
 export const uploadRoutes = new Hono();
 

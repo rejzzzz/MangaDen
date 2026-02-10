@@ -2,11 +2,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
-import { errorHandler } from "./middleware/error-handler.js";
-import { mangaRoutes } from "./routes/manga.routes.js";
-import { chapterRoutes } from "./routes/chapter.routes.js";
-import { authRoutes } from "./routes/auth.routes.js";
-import { uploadRoutes } from "./routes/upload.routes.js";
+import { errorHandler } from "./middleware/error-handler";
+import { mangaRoutes } from "./routes/manga.routes";
+import { chapterRoutes } from "./routes/chapter.routes";
+import { authRoutes } from "./routes/auth.routes";
+import { uploadRoutes } from "./routes/upload.routes";
 
 export const app = new Hono();
 
