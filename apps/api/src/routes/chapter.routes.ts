@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { db } from "../db/index";
 import { chapters, pages, manga } from "../db/schema/index";
-import { eq, ne, desc } from "drizzle-orm";
+import { eq, ne, desc, asc } from "drizzle-orm";
 import { cache } from "../lib/redis";
 
 export const chapterRoutes = new Hono();
