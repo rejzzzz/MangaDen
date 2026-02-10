@@ -111,7 +111,15 @@ mangaRoutes.get("/:slug", async (c) => {
 mangaRoutes.post("/", zValidator("json", createMangaSchema), async (c) => {
     const body = c.req.valid("json");
 
-    const [result] = await db.insert(manga).values(body).returning();
+    // Explicitly type-cast to ensure Drizzle is happy
+    // The validation middleware ensures the data is correct at runtime
+    const newManga: typeof manga.$inferInsert = {
+        ...body,
+        // Ensure enums and defaults are handled if they were optional in Zod
+        viewCount: 0,
+    };
+
+    const [result] = await db.insert(manga).values(newManga).returning();
 
     // Invalidate list cache
     await cache.delPattern("manga:list:*");
