@@ -11,6 +11,12 @@
     "db:migrate": "pnpm --filter @mangaden/api db:migrate",
     "db:studio": "pnpm --filter @mangaden/api db:studio"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  },
   "devDependencies": {
     "typescript": "^5.3.3"
   }
