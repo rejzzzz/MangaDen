@@ -112,8 +112,8 @@ mangaRoutes.post("/", zValidator("json", createMangaSchema), async (c) => {
     const body = c.req.valid("json");
 
     const [result] = await db.insert(manga).values({
-        title: body.title,
-        slug: body.slug,
+        title: body.title!,
+        slug: body.slug!,
         description: body.description,
         coverUrl: body.coverUrl,
         author: body.author,

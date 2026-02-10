@@ -77,7 +77,13 @@ chapterRoutes.get("/:chapterId/pages", async (c) => {
 chapterRoutes.post("/", zValidator("json", createChapterSchema), async (c) => {
     const body = c.req.valid("json");
 
-    const [result] = await db.insert(chapters).values(body).returning();
+    const [result] = await db.insert(chapters).values({
+        mangaId: body.mangaId!,
+        number: body.number!,
+        slug: body.slug!,
+        title: body.title,
+        pageCount: 0,
+    }).returning();
 
     // Invalidate manga cache
     const mangaRecord = await db.query.manga.findFirst({
