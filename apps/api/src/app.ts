@@ -6,6 +6,7 @@ import { errorHandler } from "./middleware/error-handler";
 import { mangaRoutes } from "./routes/manga.routes";
 import { chapterRoutes } from "./routes/chapter.routes";
 import { authRoutes } from "./routes/auth.routes";
+import { uploadRoutes } from "./routes/upload.routes";
 
 export const app = new Hono();
 
@@ -44,6 +45,7 @@ app.get("/health", (c) => {
 app.route("/api/manga", mangaRoutes);
 app.route("/api/chapters", chapterRoutes);
 app.route("/api/auth", authRoutes);
+app.route("/api/upload", uploadRoutes);
 
 // 404 handler
 app.notFound((c) => {
