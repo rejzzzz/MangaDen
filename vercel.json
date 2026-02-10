@@ -1,0 +1,5 @@
+{
+  "buildCommand": "pnpm run build:api",
+  "outputDirectory": "apps/api/api",
+  "installCommand": "pnpm install --frozen-lockfile"
+}
