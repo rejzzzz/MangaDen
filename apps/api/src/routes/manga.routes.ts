@@ -111,7 +111,19 @@ mangaRoutes.get("/:slug", async (c) => {
 mangaRoutes.post("/", zValidator("json", createMangaSchema), async (c) => {
     const body = c.req.valid("json");
 
-    const [result] = await db.insert(manga).values(body).returning();
+    const [result] = await db.insert(manga).values({
+        title: body.title!,
+        slug: body.slug!,
+        description: body.description,
+        coverUrl: body.coverUrl,
+        author: body.author,
+        artist: body.artist,
+        status: body.status,
+        type: body.type,
+        releaseYear: body.releaseYear,
+        isNsfw: body.isNsfw ?? false, // Default to false if undefined
+        viewCount: 0,
+    }).returning();
 
     // Invalidate list cache
     await cache.delPattern("manga:list:*");
