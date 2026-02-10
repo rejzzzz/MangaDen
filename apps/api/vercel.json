@@ -1,8 +1,10 @@
 {
+    "buildCommand": "pnpm run build",
+    "outputDirectory": "api",
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/api"
+            "destination": "/index.js"
         }
     ]
 }
