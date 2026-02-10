@@ -1,5 +1,5 @@
-import { db } from "./index";
-import { manga, chapters, pages } from "./schema";
+import { db } from "./index.js";
+import { manga, chapters, pages } from "./schema/index.js";
 import { eq } from "drizzle-orm";
 import "dotenv/config";
 

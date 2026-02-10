@@ -1,5 +1,5 @@
-import { db } from "./index";
-import { manga, chapters, pages, genres, mangaToGenres } from "./schema";
+import { db } from "./index.js";
+import { manga, chapters, pages, genres, mangaToGenres } from "./schema/index.js";
 import "dotenv/config";
 
 async function seed() {
