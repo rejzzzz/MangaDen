@@ -1,10 +1,10 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { db } from "../db/index";
-import { chapters, pages, manga } from "../db/schema/index";
+import { db } from "../db/index.js";
+import { chapters, pages, manga } from "../db/schema/index.js";
 import { eq, ne, desc, asc } from "drizzle-orm";
-import { cache } from "../lib/redis";
+import { cache } from "../lib/redis.js";
 
 export const chapterRoutes = new Hono();
 
