@@ -1,5 +1,15 @@
 {
     "buildCommand": "pnpm --filter @mangaden/api run build",
-    "outputDirectory": "apps/api/api",
-    "installCommand": "pnpm install --frozen-lockfile"
+    "installCommand": "pnpm install --frozen-lockfile",
+    "functions": {
+        "apps/api/api/index.js": {
+            "runtime": "@vercel/node@3"
+        }
+    },
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/apps/api/api/index.js"
+        }
+    ]
 }
