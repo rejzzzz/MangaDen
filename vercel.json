@@ -1,5 +1,5 @@
 {
-    "buildCommand": "pnpm run build:api",
+    "buildCommand": "pnpm --filter @mangaden/api run build",
     "outputDirectory": "apps/api/api",
     "installCommand": "pnpm install --frozen-lockfile"
 }
