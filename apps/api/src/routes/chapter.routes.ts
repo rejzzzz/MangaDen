@@ -1,10 +1,14 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { db } from "../db";
-import { chapters, pages, manga } from "../db/schema";
-import { eq, asc } from "drizzle-orm";
-import { cache } from "../lib/redis";
+import { db } from "../db/index.js";
+import { chapters, pages, manga } from "../db/schema/index.js";
+import { eq, ne, desc, asc } from "drizzle-orm";
+import { cache } from "../lib/redis.js";
+import {
+    authMiddleware,
+    adminMiddleware,
+} from "../middleware/auth.middleware.js";
 
 export const chapterRoutes = new Hono();
 
@@ -73,32 +77,41 @@ chapterRoutes.get("/:chapterId/pages", async (c) => {
     return c.json({ success: true, data: chapter });
 });
 
-// POST /api/chapters - Create chapter
-chapterRoutes.post("/", zValidator("json", createChapterSchema), async (c) => {
-    const body = c.req.valid("json");
+// POST /api/chapters - Create chapter (admin only)
+chapterRoutes.post(
+    "/",
+    authMiddleware,
+    adminMiddleware,
+    zValidator("json", createChapterSchema),
+    async (c) => {
+        const body = c.req.valid("json");
 
-    const [result] = await db.insert(chapters).values({
-        mangaId: body.mangaId!,
-        number: body.number!,
-        slug: body.slug!,
-        title: body.title,
-        pageCount: 0,
-    }).returning();
+        const [result] = await db
+            .insert(chapters)
+            .values({
+                mangaId: body.mangaId!,
+                number: body.number!,
+                slug: body.slug!,
+                title: body.title,
+                pageCount: 0,
+            })
+            .returning();
 
-    // Invalidate manga cache
-    const mangaRecord = await db.query.manga.findFirst({
-        where: eq(manga.id, body.mangaId),
-    });
-    if (mangaRecord) {
-        await cache.del(`chapters:${mangaRecord.slug}`);
-        await cache.del(`manga:${mangaRecord.slug}`);
-    }
+        // Invalidate manga cache
+        const mangaRecord = await db.query.manga.findFirst({
+            where: eq(manga.id, body.mangaId),
+        });
+        if (mangaRecord) {
+            await cache.del(`chapters:${mangaRecord.slug}`);
+            await cache.del(`manga:${mangaRecord.slug}`);
+        }
 
-    return c.json({ success: true, data: result }, 201);
-});
+        return c.json({ success: true, data: result }, 201);
+    },
+);
 
-// DELETE /api/chapters/:id
-chapterRoutes.delete("/:id", async (c) => {
+// DELETE /api/chapters/:id (admin only)
+chapterRoutes.delete("/:id", authMiddleware, adminMiddleware, async (c) => {
     const id = c.req.param("id");
 
     const chapter = await db.query.chapters.findFirst({

@@ -1,38 +1,62 @@
 # Dependencies
 node_modules/
-.pnpm-store/
+.pnp
+.pnp.js
 
-# Build outputs
+# Testing
+coverage/
+*.lcov
+.nyc_output
+
+# Production
 dist/
-.output/
-.astro/
+build/
+api/
 
 # Environment
 .env
 .env.local
-.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
-.DS_Store
-Thumbs.db
+# Astro
+.astro/
+apps/web/.astro/
 
-# Logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
+# Drizzle
+apps/api/drizzle/
 
-# Testing
-coverage/
+# Temporary files
+*.tmp
+*.temp
+.cache/
 
-# Misc
-*.tsbuildinfo
-.turbo/
+# Docker
+.dockerignore
 
-notes.txt
+# Vercel
+.vercel
+
+# Props/Test data (optional - remove if needed in production)
 props/
