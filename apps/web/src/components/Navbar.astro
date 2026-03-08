@@ -1,6 +1,7 @@
 ---
 import LiveSearch from "./LiveSearch";
 import MobileNav from "./MobileNav";
+import UserMenu from "./UserMenu";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -34,7 +35,7 @@ const navLinks = [
       <div class="search-desktop">
         <LiveSearch client:load />
       </div>
-      <a href="/login" class="btn-login">Sign In</a>
+      <UserMenu client:load />
     </div>
   </div>
 </nav>
@@ -118,6 +119,10 @@ const navLinks = [
     transform: translateY(-1px);
     box-shadow: var(--shadow-glow);
   }
+
+  :global(.user-menu) {
+    display: block;
+  }
   
   @media (max-width: 768px) {
     .mobile-menu {
@@ -132,7 +137,7 @@ const navLinks = [
       display: none;
     }
     
-    .btn-login {
+    :global(.user-menu) {
       display: none;
     }
     

@@ -5,12 +5,13 @@
     "type": "module",
     "scripts": {
         "dev": "tsx watch src/index.ts",
-        "build": "esbuild ./src/vercel.ts --bundle --platform=node --target=node20 --format=esm --outfile=./api/index.js",
+        "build": "esbuild ./src/vercel.ts --bundle --platform=node --target=node20 --format=esm --outfile=./api/index.js --external:dotenv",
         "start": "node api/index.js",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit push",
         "db:studio": "drizzle-kit studio",
-        "db:seed": "tsx src/db/seed.ts"
+        "db:seed": "tsx src/db/seed.ts",
+        "test:connections": "tsx test-connections.ts"
     },
     "dependencies": {
         "@hono/node-server": "^1.8.0",
@@ -18,6 +19,7 @@
         "@supabase/supabase-js": "^2.95.3",
         "@upstash/redis": "^1.36.2",
         "@vercel/node": "^5.6.1",
+        "better-auth": "^1.4.19",
         "cloudinary": "^2.9.0",
         "dotenv": "^16.3.0",
         "drizzle-orm": "^0.45.1",

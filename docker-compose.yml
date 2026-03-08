@@ -1,34 +1,24 @@
-version: "3.8"
+# Production Docker setup for MangaDen API
+# Frontend deploys to Vercel separately
+# Uses Supabase (PostgreSQL) and Upstash (Redis)
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: mangaden-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: mangaden
-      POSTGRES_PASSWORD: mangaden123
-      POSTGRES_DB: mangaden
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U mangaden" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    container_name: mangaden-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-
-volumes:
-  postgres_data:
-  redis_data:
+    api:
+        build:
+            context: .
+            dockerfile: apps/api/Dockerfile
+        container_name: mangaden-api
+        restart: unless-stopped
+        ports:
+            - "3000:3000"
+        environment:
+            - NODE_ENV=production
+            - PORT=3000
+        env_file:
+            - apps/api/.env
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s

@@ -1,98 +1,203 @@
-# 📚 MangaDen
+# MangaDen 📚
 
-A high-performance manga/manhwa reading platform built with modern web technologies.
+A modern manga reading platform built with Astro, React, and Hono.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Frontend**: Astro + React (SSG + Islands)
-- **Backend**: Hono + TypeScript (Ultralight API)
-- **Database**: PostgreSQL + Drizzle ORM
-- **Cache**: Redis
-- **Storage**: S3/R2 + CDN
+### Frontend
 
-## 📁 Project Structure
+- **Astro 5** - Static site generation with islands architecture
+- **React 19** - Interactive components
+- **TypeScript** - Type safety
+
+### Backend
+
+- **Hono** - Ultralight web framework
+- **Drizzle ORM** - Type-safe database queries
+- **Better Auth** - Authentication with OAuth support
+
+### Infrastructure
+
+- **Supabase** - PostgreSQL database
+- **Upstash** - Redis caching
+- **Cloudinary** - Image storage and optimization
+- **Docker** - Containerized deployment
+
+## Project Structure
 
 ```
-MangaDen/
+mangaden/
 ├── apps/
-│   ├── api/           # Hono backend
-│   └── web/           # Astro + React frontend
+│   ├── api/          # Hono backend API
+│   └── web/          # Astro frontend
 ├── packages/
-│   └── shared/        # Shared types & utilities
-└── docker-compose.yml # Local dev services
+│   └── shared/       # Shared types and utilities
+└── docker-compose.yml
 ```
 
-## 🚀 Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Node.js 20+
 - pnpm 8+
-- Docker & Docker Compose
+- Docker (for production deployment)
 
-### Setup
+## Development Setup
 
-1. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-
-2. **Start databases**
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Setup environment**
-   ```bash
-   cp apps/api/.env.example apps/api/.env
-   ```
-
-4. **Run migrations**
-   ```bash
-   pnpm db:generate
-   pnpm db:migrate
-   ```
-
-5. **Start development**
-   ```bash
-   # Terminal 1 - API
-   pnpm dev:api
-
-   # Terminal 2 - Web (after setting up Astro)
-   pnpm dev:web
-   ```
-
-## 📝 API Endpoints
-
-### Manga
-- `GET /api/manga` - List all manga
-- `GET /api/manga/:slug` - Get manga details
-- `POST /api/manga` - Create manga
-- `PATCH /api/manga/:id` - Update manga
-- `DELETE /api/manga/:id` - Delete manga
-
-### Chapters
-- `GET /api/chapters/manga/:mangaSlug` - Get chapters
-- `GET /api/chapters/:id/pages` - Get chapter pages
-- `POST /api/chapters` - Create chapter
-- `DELETE /api/chapters/:id` - Delete chapter
-
-### Auth
-- `POST /api/auth/register` - Register user
-- `POST /api/auth/login` - Login
-- `GET /api/auth/me` - Get current user
-- `POST /api/auth/logout` - Logout
-
-## 🔧 Scripts
+### 1. Install Dependencies
 
 ```bash
-pnpm dev:api      # Start API dev server
-pnpm dev:web      # Start web dev server
-pnpm db:generate  # Generate migrations
-pnpm db:migrate   # Run migrations
-pnpm db:studio    # Open Drizzle Studio
+pnpm install
 ```
 
-## 📄 License
+### 2. Configure Environment Variables
+
+**Backend** (`apps/api/.env`):
+
+```bash
+cp apps/api/.env.example apps/api/.env
+# Edit apps/api/.env with your credentials
+```
+
+**Frontend** (`apps/web/.env`):
+
+```bash
+cp apps/web/.env.example apps/web/.env
+```
+
+### 3. Run Database Migrations
+
+```bash
+pnpm db:migrate
+```
+
+### 4. (Optional) Seed Database
+
+```bash
+pnpm --filter @mangaden/api db:seed
+```
+
+### 5. Start Development Servers
+
+```bash
+pnpm dev
+```
+
+This runs both frontend and backend concurrently:
+
+- Frontend: http://localhost:4321
+- Backend: http://localhost:3000
+
+## Available Scripts
+
+### Development
+
+```bash
+pnpm dev              # Run both frontend and backend
+pnpm dev:api          # Run backend only
+pnpm dev:web          # Run frontend only
+```
+
+### Build
+
+```bash
+pnpm build            # Build both apps
+pnpm build:api        # Build backend only
+pnpm build:web        # Build frontend only
+```
+
+### Database
+
+```bash
+pnpm db:generate      # Generate migrations
+pnpm db:migrate       # Run migrations
+pnpm db:studio        # Open Drizzle Studio
+```
+
+### Docker (Production)
+
+```bash
+docker-compose up -d          # Start containers
+docker-compose down           # Stop containers
+docker-compose logs -f        # View logs
+```
+
+## Production Deployment
+
+### Using Docker
+
+1. **Build and start containers:**
+
+```bash
+docker-compose up -d --build
+```
+
+2. **Check health:**
+
+```bash
+docker-compose ps
+```
+
+3. **View logs:**
+
+```bash
+docker-compose logs -f api
+docker-compose logs -f web
+```
+
+### Using Vercel
+
+The project is configured for Vercel deployment:
+
+1. Push to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
+
+## Environment Variables
+
+### Required for Backend
+
+- `DATABASE_URL` - Supabase PostgreSQL connection string
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `UPSTASH_REDIS_REST_URL` - Upstash Redis URL
+- `UPSTASH_REDIS_REST_TOKEN` - Upstash Redis token
+- `BETTER_AUTH_SECRET` - Random secret for auth
+- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name
+- `CLOUDINARY_API_KEY` - Cloudinary API key
+- `CLOUDINARY_API_SECRET` - Cloudinary API secret
+
+### Optional OAuth
+
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
+- `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`
+
+## Features
+
+- 📖 Manga reading with vertical scroll
+- 🔍 Search and browse functionality
+- 🔐 Authentication (email/password + OAuth)
+- 💾 Reading progress tracking
+- ⭐ Favorites system
+- 🎨 Dark theme with responsive design
+- ⚡ Redis caching for performance
+- 🖼️ Cloudinary image optimization
+
+## API Endpoints
+
+```
+GET    /api/manga              # List manga
+GET    /api/manga/:slug        # Get manga details
+GET    /api/chapters/manga/:slug  # Get chapters
+GET    /api/chapters/:id/pages    # Get chapter pages
+POST   /api/auth/*             # Authentication
+POST   /api/upload             # Upload images (admin)
+```
+
+## License
 
 MIT
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a PR.

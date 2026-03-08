@@ -5,6 +5,10 @@ import { db } from "../db/index.js";
 import { manga } from "../db/schema/index.js";
 import { eq, desc, ilike, and } from "drizzle-orm";
 import { cache } from "../lib/redis.js";
+import {
+    authMiddleware,
+    adminMiddleware,
+} from "../middleware/auth.middleware.js";
 
 export const mangaRoutes = new Hono();
 
@@ -107,54 +111,69 @@ mangaRoutes.get("/:slug", async (c) => {
     return c.json({ success: true, data: result });
 });
 
-// POST /api/manga - Create manga (admin only - TODO: add auth)
-mangaRoutes.post("/", zValidator("json", createMangaSchema), async (c) => {
-    const body = c.req.valid("json");
+// POST /api/manga - Create manga (admin only)
+mangaRoutes.post(
+    "/",
+    authMiddleware,
+    adminMiddleware,
+    zValidator("json", createMangaSchema),
+    async (c) => {
+        const body = c.req.valid("json");
 
-    const [result] = await db.insert(manga).values({
-        title: body.title!,
-        slug: body.slug!,
-        description: body.description,
-        coverUrl: body.coverUrl,
-        author: body.author,
-        artist: body.artist,
-        status: body.status,
-        type: body.type,
-        releaseYear: body.releaseYear,
-        isNsfw: body.isNsfw ?? false, // Default to false if undefined
-        viewCount: 0,
-    }).returning();
+        const [result] = await db
+            .insert(manga)
+            .values({
+                title: body.title!,
+                slug: body.slug!,
+                description: body.description,
+                coverUrl: body.coverUrl,
+                author: body.author,
+                artist: body.artist,
+                status: body.status,
+                type: body.type,
+                releaseYear: body.releaseYear,
+                isNsfw: body.isNsfw ?? false, // Default to false if undefined
+                viewCount: 0,
+            })
+            .returning();
 
-    // Invalidate list cache
-    await cache.delPattern("manga:list:*");
+        // Invalidate list cache
+        await cache.delPattern("manga:list:*");
 
-    return c.json({ success: true, data: result }, 201);
-});
+        return c.json({ success: true, data: result }, 201);
+    },
+);
 
-// PATCH /api/manga/:id - Update manga
-mangaRoutes.patch("/:id", zValidator("json", createMangaSchema.partial()), async (c) => {
-    const id = c.req.param("id");
-    const body = c.req.valid("json");
+// PATCH /api/manga/:id - Update manga (admin only)
+mangaRoutes.patch(
+    "/:id",
+    authMiddleware,
+    adminMiddleware,
+    zValidator("json", createMangaSchema.partial()),
+    async (c) => {
+        const id = c.req.param("id");
+        const body = c.req.valid("json");
 
-    const [result] = await db
-        .update(manga)
-        .set({ ...body, updatedAt: new Date() })
-        .where(eq(manga.id, id))
-        .returning();
+        const [result] = await db
+            .update(manga)
+            .set({ ...body, updatedAt: new Date() })
+            .where(eq(manga.id, id))
+            .returning();
 
-    if (!result) {
-        return c.json({ success: false, error: "Manga not found" }, 404);
-    }
+        if (!result) {
+            return c.json({ success: false, error: "Manga not found" }, 404);
+        }
 
-    // Invalidate caches
-    await cache.del(`manga:${result.slug}`);
-    await cache.delPattern("manga:list:*");
+        // Invalidate caches
+        await cache.del(`manga:${result.slug}`);
+        await cache.delPattern("manga:list:*");
 
-    return c.json({ success: true, data: result });
-});
+        return c.json({ success: true, data: result });
+    },
+);
 
-// DELETE /api/manga/:id - Delete manga
-mangaRoutes.delete("/:id", async (c) => {
+// DELETE /api/manga/:id - Delete manga (admin only)
+mangaRoutes.delete("/:id", authMiddleware, adminMiddleware, async (c) => {
     const id = c.req.param("id");
 
     const [result] = await db.delete(manga).where(eq(manga.id, id)).returning();
