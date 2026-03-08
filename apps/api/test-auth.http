@@ -1,0 +1,35 @@
+### Register a new user
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Get current user (replace TOKEN with actual token from login)
+GET http://localhost:3000/api/auth/me
+Authorization: Bearer TOKEN
+
+### Test protected route - Create manga (admin only)
+POST http://localhost:3000/api/manga
+Content-Type: application/json
+Authorization: Bearer TOKEN
+
+{
+  "title": "Test Manga",
+  "slug": "test-manga",
+  "description": "A test manga",
+  "status": "ongoing",
+  "type": "manga"
+}
