@@ -16,9 +16,13 @@ app.use("*", prettyJSON());
 app.use(
     "*",
     cors({
-        origin: ["http://localhost:4321", "http://localhost:3000"],
+        origin: [
+            "http://localhost:4321",
+            "http://localhost:3000",
+            "https://mangaden.rejwanul.dev",
+        ],
         credentials: true,
-    })
+    }),
 );
 
 // Error handling
@@ -55,6 +59,6 @@ app.notFound((c) => {
             error: "Not Found",
             message: `Route ${c.req.path} not found`,
         },
-        404
+        404,
     );
 });
