@@ -7,6 +7,8 @@ import { mangaRoutes } from "./routes/manga.routes.js";
 import { chapterRoutes } from "./routes/chapter.routes.js";
 import { authRoutes } from "./routes/auth.routes.js";
 import { uploadRoutes } from "./routes/upload.routes.js";
+import { pagesRoutes } from "./routes/pages.routes.js";
+import { userRoutes } from "./routes/user.routes.js";
 
 export const app = new Hono();
 
@@ -50,6 +52,8 @@ app.route("/api/manga", mangaRoutes);
 app.route("/api/chapters", chapterRoutes);
 app.route("/api/auth", authRoutes);
 app.route("/api/upload", uploadRoutes);
+app.route("/api/pages", pagesRoutes);
+app.route("/api/user", userRoutes);
 
 // 404 handler
 app.notFound((c) => {

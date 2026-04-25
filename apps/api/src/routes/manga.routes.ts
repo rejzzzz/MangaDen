@@ -3,8 +3,8 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { db } from "../db/index.js";
 import { manga } from "../db/schema/index.js";
-import { eq, desc, ilike, and } from "drizzle-orm";
-import { cache } from "../lib/redis.js";
+import { eq, desc, ilike, and, sql } from "drizzle-orm";
+import { cache, redis } from "../lib/redis.js";
 import {
     authMiddleware,
     adminMiddleware,
@@ -109,6 +109,33 @@ mangaRoutes.get("/:slug", async (c) => {
     await cache.set(cacheKey, result, 600);
 
     return c.json({ success: true, data: result });
+});
+
+// POST /api/manga/:slug/view - Increment view count (debounced per IP)
+mangaRoutes.post("/:slug/view", async (c) => {
+    const slug = c.req.param("slug");
+    const ip =
+        c.req.header("x-forwarded-for") ??
+        c.req.header("x-real-ip") ??
+        "unknown";
+    const dedupeKey = `view:${slug}:${ip}`;
+
+    // Only count once per IP per hour
+    const already = await redis.get(dedupeKey);
+    if (already) return c.json({ success: true, counted: false });
+
+    await redis.set(dedupeKey, 1, { ex: 3600 });
+
+    // Increment in DB
+    await db
+        .update(manga)
+        .set({ viewCount: sql`${manga.viewCount} + 1` })
+        .where(eq(manga.slug, slug));
+
+    // Invalidate cached manga so view count stays fresh
+    await cache.del(`manga:${slug}`);
+
+    return c.json({ success: true, counted: true });
 });
 
 // POST /api/manga - Create manga (admin only)

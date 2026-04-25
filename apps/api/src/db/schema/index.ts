@@ -7,6 +7,7 @@ import {
     integer,
     boolean,
     pgEnum,
+    unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -98,20 +99,24 @@ export const pages = pgTable("pages", {
 });
 
 // ============ READING PROGRESS ============
-export const readingProgress = pgTable("reading_progress", {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
-        .references(() => users.id, { onDelete: "cascade" })
-        .notNull(),
-    mangaId: uuid("manga_id")
-        .references(() => manga.id, { onDelete: "cascade" })
-        .notNull(),
-    chapterId: uuid("chapter_id")
-        .references(() => chapters.id, { onDelete: "cascade" })
-        .notNull(),
-    pageNumber: integer("page_number").default(1).notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const readingProgress = pgTable(
+    "reading_progress",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        userId: uuid("user_id")
+            .references(() => users.id, { onDelete: "cascade" })
+            .notNull(),
+        mangaId: uuid("manga_id")
+            .references(() => manga.id, { onDelete: "cascade" })
+            .notNull(),
+        chapterId: uuid("chapter_id")
+            .references(() => chapters.id, { onDelete: "cascade" })
+            .notNull(),
+        pageNumber: integer("page_number").default(1).notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (t) => [unique().on(t.userId, t.mangaId)],
+);
 
 // ============ FAVORITES ============
 export const favorites = pgTable("favorites", {
@@ -151,3 +156,17 @@ export const usersRelations = relations(users, ({ many }) => ({
     readingProgress: many(readingProgress),
     favorites: many(favorites),
 }));
+
+export const readingProgressRelations = relations(
+    readingProgress,
+    ({ one }) => ({
+        chapter: one(chapters, {
+            fields: [readingProgress.chapterId],
+            references: [chapters.id],
+        }),
+        manga: one(manga, {
+            fields: [readingProgress.mangaId],
+            references: [manga.id],
+        }),
+    }),
+);
