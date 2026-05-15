@@ -11,7 +11,7 @@ coverage/
 # Production
 dist/
 build/
-apps/api/api/
+backend/api/
 
 # Environment
 .env
@@ -42,10 +42,10 @@ Thumbs.db
 
 # Astro
 .astro/
-apps/web/.astro/
+frontend/.astro/
 
 # Drizzle
-apps/api/drizzle/
+backend/drizzle/
 
 # Temporary files
 *.tmp

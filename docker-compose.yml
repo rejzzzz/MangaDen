@@ -1,13 +1,13 @@
-# Production Docker setup for MangaDen API
+# Production Docker setup for MangaDen
 # Frontend deploys to Vercel separately
-# Uses Supabase (PostgreSQL) and Upstash (Redis)
+# Backend runs in Docker with Supabase (PostgreSQL) and Upstash (Redis)
 
 services:
-    api:
+    backend:
         build:
             context: .
-            dockerfile: apps/api/Dockerfile
-        container_name: mangaden-api
+            dockerfile: docker/Dockerfile.backend
+        container_name: mangaden-backend
         restart: unless-stopped
         ports:
             - "3000:3000"
@@ -15,7 +15,7 @@ services:
             - NODE_ENV=production
             - PORT=3000
         env_file:
-            - apps/api/.env
+            - backend/.env
         healthcheck:
             test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
             interval: 30s
