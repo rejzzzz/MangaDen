@@ -5,6 +5,7 @@ import { supabaseAdmin } from "../lib/supabase-auth.js";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/index.js";
 import { eq } from "drizzle-orm";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 
 export const authRoutes = new Hono();
 
@@ -23,10 +24,11 @@ const signInSchema = z.object({
 function setAuthCookies(c: any, accessToken: string, refreshToken: string) {
     const oneDay = 24 * 60 * 60; // 1 day in seconds
     const sevenDays = 7 * 24 * 60 * 60; // 7 days in seconds
+    const secureAttr = process.env.NODE_ENV === "production" ? "; Secure" : "";
 
     c.header("Set-Cookie", [
-        `access_token=${accessToken}; Max-Age=${oneDay}; Path=/; HttpOnly; Secure; SameSite=Strict`,
-        `refresh_token=${refreshToken}; Max-Age=${sevenDays}; Path=/; HttpOnly; Secure; SameSite=Strict`,
+        `access_token=${accessToken}; Max-Age=${oneDay}; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
+        `refresh_token=${refreshToken}; Max-Age=${sevenDays}; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
     ]);
 }
 
@@ -84,7 +86,10 @@ authRoutes.post("/sign-up", zValidator("json", signUpSchema), async (c) => {
 
         // Generate session token
         const { data: sessionData, error: sessionError } =
-            await supabaseAdmin.auth.admin.createSession(authData.user.id);
+            await supabaseAdmin.auth.signInWithPassword({
+                email,
+                password,
+            });
 
         if (sessionError || !sessionData.session) {
             return c.json(
@@ -139,8 +144,10 @@ authRoutes.post("/sign-in", zValidator("json", signInSchema), async (c) => {
 
     try {
         // Authenticate with Supabase
-        const { data, error } =
-            await supabaseAdmin.auth.admin.signInWithPassword(email, password);
+        const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+            email,
+            password,
+        });
 
         if (error || !data.session) {
             return c.json(
@@ -263,14 +270,25 @@ authRoutes.post("/refresh", async (c) => {
 
 // POST /api/auth/sign-out
 authRoutes.post("/sign-out", async (c) => {
+    const secureAttr = process.env.NODE_ENV === "production" ? "; Secure" : "";
+
     // Clear cookies by setting Max-Age to 0
     c.header("Set-Cookie", [
-        "access_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict",
-        "refresh_token=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Strict",
+        `access_token=; Max-Age=0; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
+        `refresh_token=; Max-Age=0; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
     ]);
 
     return c.json({
         success: true,
         message: "Signed out successfully",
+    });
+});
+
+// GET /api/auth/me
+authRoutes.get("/me", authMiddleware, async (c) => {
+    const user = c.get("user");
+    return c.json({
+        success: true,
+        data: { user },
     });
 });

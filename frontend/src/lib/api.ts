@@ -1,5 +1,3 @@
-import { getAccessToken } from "./auth-client";
-
 const API_BASE = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 
 // Ensure API_BASE ends with /api
@@ -52,14 +50,32 @@ export interface ApiResponse<T> {
     };
 }
 
+export interface TrendingResult {
+    period: "1d" | "7d" | "30d";
+    limit: number;
+    offset: number;
+    total: number;
+    manga: Array<{
+        id: string;
+        title: string;
+        slug: string;
+        coverUrl: string | null;
+        score: number;
+        rank: number;
+        metrics: {
+            mangaId: string;
+            views: number;
+            bookmarks: number;
+            ratings: number;
+            comments: number;
+        };
+    }>;
+    generatedAt: string;
+    expiresAt: string;
+}
+
 // API Client
 export const api = {
-    // Auth helpers
-    getAuthHeaders() {
-        const token = getAccessToken();
-        return token ? { Authorization: `Bearer ${token}` } : {};
-    },
-
     // Manga
     async getManga(params?: {
         page?: number;
@@ -95,5 +111,20 @@ export const api = {
     async getChapterPages(chapterId: string) {
         const res = await fetch(`${API_URL}/chapters/${chapterId}/pages`);
         return res.json() as Promise<ApiResponse<Chapter & { pages: Page[] }>>;
+    },
+
+    // Trending
+    async getTrending(params?: {
+        period?: "1d" | "7d" | "30d";
+        limit?: number;
+        offset?: number;
+    }) {
+        const searchParams = new URLSearchParams();
+        if (params?.period) searchParams.set("period", params.period);
+        if (params?.limit) searchParams.set("limit", String(params.limit));
+        if (params?.offset) searchParams.set("offset", String(params.offset));
+
+        const res = await fetch(`${API_URL}/trending?${searchParams}`);
+        return res.json() as Promise<ApiResponse<TrendingResult>>;
     },
 };

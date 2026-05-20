@@ -2,10 +2,11 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import { db } from "../db/index.js";
-import { favorites, manga, readingProgress } from "../db/schema/index.js";
+import { favorites, manga, readingProgress, users } from "../db/schema/index.js";
 import { eq, and } from "drizzle-orm";
 import { cache } from "../lib/cache/redis.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import { uploadImage } from "../lib/storage/cloudinary.js";
 
 export const userRoutes = new Hono();
 
@@ -140,4 +141,43 @@ userRoutes.get("/progress", async (c) => {
 
     await cache.set(cacheKey, result, 120);
     return c.json({ success: true, data: result });
+});
+
+// POST /api/user/avatar - Upload profile picture and update user profile
+userRoutes.post("/avatar", async (c) => {
+    const user = c.get("user");
+
+    try {
+        const body = await c.req.parseBody();
+        const file = body["file"];
+
+        if (!file || !(file instanceof File)) {
+            return c.json({ success: false, error: "No image file uploaded" }, 400);
+        }
+
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const uploadResult = await uploadImage(buffer, "avatars", `user-${user.id}`);
+
+        const [updatedUser] = await db
+            .update(users)
+            .set({ avatarUrl: uploadResult.secure_url, updatedAt: new Date() })
+            .where(eq(users.id, user.id))
+            .returning();
+
+        if (!updatedUser) {
+            return c.json({ success: false, error: "User not found" }, 404);
+        }
+
+        return c.json({
+            success: true,
+            data: {
+                user: updatedUser,
+                avatarUrl: uploadResult.secure_url,
+            },
+        });
+    } catch (error) {
+        console.error("Avatar upload error:", error);
+        return c.json({ success: false, error: "Failed to upload avatar" }, 500);
+    }
 });

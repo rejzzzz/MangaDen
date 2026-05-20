@@ -9,6 +9,7 @@ import { authRoutes } from "./routes/auth.routes.js";
 import { uploadRoutes } from "./routes/upload.routes.js";
 import { pagesRoutes } from "./routes/pages.routes.js";
 import { userRoutes } from "./routes/user.routes.js";
+import { trendingRoutes } from "./routes/trending.routes.js";
 
 export const app = new Hono();
 
@@ -54,6 +55,7 @@ app.route("/api/auth", authRoutes);
 app.route("/api/upload", uploadRoutes);
 app.route("/api/pages", pagesRoutes);
 app.route("/api/user", userRoutes);
+app.route("/api/trending", trendingRoutes);
 
 // 404 handler
 app.notFound((c) => {

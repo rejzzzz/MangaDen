@@ -8,6 +8,7 @@ import {
     boolean,
     pgEnum,
     unique,
+    index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -169,4 +170,78 @@ export const readingProgressRelations = relations(
             references: [manga.id],
         }),
     }),
+);
+
+// ============ TRENDING ENGINE ============
+export const mangaViews = pgTable(
+    "manga_views",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        mangaId: uuid("manga_id")
+            .references(() => manga.id, { onDelete: "cascade" })
+            .notNull(),
+        ipAddress: varchar("ip_address", { length: 45 }),
+        userId: uuid("user_id").references(() => users.id, {
+            onDelete: "set null",
+        }),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+    },
+    (t) => [index("idx_manga_views_manga_created").on(t.mangaId, t.createdAt)],
+);
+
+export const mangaRatings = pgTable(
+    "manga_ratings",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        mangaId: uuid("manga_id")
+            .references(() => manga.id, { onDelete: "cascade" })
+            .notNull(),
+        userId: uuid("user_id")
+            .references(() => users.id, { onDelete: "cascade" })
+            .notNull(),
+        rating: integer("rating").notNull(), // 1-5
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (t) => [
+        unique().on(t.mangaId, t.userId),
+        index("idx_manga_ratings_manga_created").on(t.mangaId, t.createdAt),
+    ],
+);
+
+export const mangaComments = pgTable(
+    "manga_comments",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        mangaId: uuid("manga_id")
+            .references(() => manga.id, { onDelete: "cascade" })
+            .notNull(),
+        userId: uuid("user_id")
+            .references(() => users.id, { onDelete: "cascade" })
+            .notNull(),
+        content: text("content").notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+        updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    },
+    (t) => [
+        index("idx_manga_comments_manga_created").on(t.mangaId, t.createdAt),
+    ],
+);
+
+export const mangaBookmarks = pgTable(
+    "manga_bookmarks",
+    {
+        id: uuid("id").primaryKey().defaultRandom(),
+        mangaId: uuid("manga_id")
+            .references(() => manga.id, { onDelete: "cascade" })
+            .notNull(),
+        userId: uuid("user_id")
+            .references(() => users.id, { onDelete: "cascade" })
+            .notNull(),
+        createdAt: timestamp("created_at").defaultNow().notNull(),
+    },
+    (t) => [
+        unique().on(t.mangaId, t.userId),
+        index("idx_manga_bookmarks_manga_created").on(t.mangaId, t.createdAt),
+    ],
 );

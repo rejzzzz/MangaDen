@@ -1,18 +1,12 @@
 import { db } from "./index.js";
-import {
-    manga,
-    chapters,
-    pages,
-    genres,
-    mangaToGenres,
-} from "./schema/index.js";
-import { uploadImage } from "../lib/cloudinary.js";
-import { readFileSync, readdirSync } from "fs";
-import { join } from "path";
+import { manga, chapters, pages, genres, mangaToGenres } from "./schema/index.js";
+import { cache } from "../lib/cache/redis.js";
 import "dotenv/config";
 
 async function seed() {
     console.log("🌱 Seeding database...");
+    await cache.delPattern("manga:list:*");
+    await cache.delPattern("manga:*");
 
     // Clear existing data
     console.log("🗑️  Clearing existing data...");
@@ -40,177 +34,102 @@ async function seed() {
         .returning();
     console.log(`✅ Created ${insertedGenres.length} genres`);
 
-    // Create One Piece manga
-    console.log("📚 Creating One Piece manga...");
-    const [onePiece] = await db
-        .insert(manga)
-        .values({
+    const mangaData = [
+        {
             title: "One Piece",
             slug: "one-piece",
-            description:
-                "Gol D. Roger, a man referred to as the 'King of the Pirates,' is set to be executed by the World Government. But just before his demise, he confirms the existence of a great treasure, One Piece, located somewhere within the vast ocean known as the Grand Line. Announcing that One Piece can be claimed by anyone worthy enough to reach it, the King of the Pirates is executed and the Great Age of Pirates begins.",
-            coverUrl:
-                "https://placehold.co/300x400/ec4899/ffffff?text=One+Piece",
+            description: "A pirate adventure to find the ultimate treasure, One Piece.",
+            coverUrl: "https://placehold.co/300x400/f97316/ffffff?text=One+Piece",
             author: "Eiichiro Oda",
             artist: "Eiichiro Oda",
             status: "ongoing" as const,
             type: "manga" as const,
             releaseYear: 1997,
-            viewCount: 0,
-        })
-        .returning();
+        },
+        {
+            title: "Jujutsu Kaisen",
+            slug: "jujutsu-kaisen",
+            description: "A student enters the world of curses and sorcerers.",
+            coverUrl: "https://placehold.co/300x400/dc2626/ffffff?text=Jujutsu+Kaisen",
+            author: "Gege Akutami",
+            artist: "Gege Akutami",
+            status: "ongoing" as const,
+            type: "manga" as const,
+            releaseYear: 2018,
+        },
+        {
+            title: "Solo Leveling",
+            slug: "solo-leveling",
+            description: "The weakest hunter rises through mysterious leveling powers.",
+            coverUrl: "https://placehold.co/300x400/2563eb/ffffff?text=Solo+Leveling",
+            author: "Chugong",
+            artist: "Dubu",
+            status: "completed" as const,
+            type: "manhwa" as const,
+            releaseYear: 2018,
+        },
+        {
+            title: "Demon Slayer",
+            slug: "demon-slayer",
+            description: "A boy fights demons to save his sister and avenge his family.",
+            coverUrl: "https://placehold.co/300x400/0f766e/ffffff?text=Demon+Slayer",
+            author: "Koyoharu Gotouge",
+            artist: "Koyoharu Gotouge",
+            status: "completed" as const,
+            type: "manga" as const,
+            releaseYear: 2016,
+        },
+        {
+            title: "Tower of God",
+            slug: "tower-of-god",
+            description: "A boy climbs a mysterious tower to find his closest friend.",
+            coverUrl: "https://placehold.co/300x400/7c3aed/ffffff?text=Tower+of+God",
+            author: "SIU",
+            artist: "SIU",
+            status: "ongoing" as const,
+            type: "webtoon" as const,
+            releaseYear: 2010,
+        },
+        {
+            title: "Chainsaw Man",
+            slug: "chainsaw-man",
+            description: "A devil hunter with chainsaw powers battles terrifying enemies.",
+            coverUrl: "https://placehold.co/300x400/b91c1c/ffffff?text=Chainsaw+Man",
+            author: "Tatsuki Fujimoto",
+            artist: "Tatsuki Fujimoto",
+            status: "ongoing" as const,
+            type: "manga" as const,
+            releaseYear: 2018,
+        },
+    ];
 
-    console.log(`✅ Created One Piece manga`);
+    const insertedManga = await db.insert(manga).values(mangaData).returning();
+    console.log(`✅ Created ${insertedManga.length} manga`);
 
-    // Link genres to One Piece
-    const actionGenre = insertedGenres.find((g) => g.slug === "action");
-    const adventureGenre = insertedGenres.find((g) => g.slug === "adventure");
-    const fantasyGenre = insertedGenres.find((g) => g.slug === "fantasy");
-    const shounenGenre = insertedGenres.find((g) => g.slug === "shounen");
+    const genreBySlug = Object.fromEntries(insertedGenres.map((g) => [g.slug, g.id]));
+    const mangaBySlug = Object.fromEntries(insertedManga.map((m) => [m.slug, m.id]));
 
-    if (actionGenre && adventureGenre && fantasyGenre && shounenGenre) {
-        await db.insert(mangaToGenres).values([
-            { mangaId: onePiece.id, genreId: actionGenre.id },
-            { mangaId: onePiece.id, genreId: adventureGenre.id },
-            { mangaId: onePiece.id, genreId: fantasyGenre.id },
-            { mangaId: onePiece.id, genreId: shounenGenre.id },
-        ]);
-        console.log(`✅ Linked genres to One Piece`);
-    }
+    await db.insert(mangaToGenres).values([
+        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["action"] },
+        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["adventure"] },
+        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["fantasy"] },
+        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["shounen"] },
+        { mangaId: mangaBySlug["jujutsu-kaisen"], genreId: genreBySlug["action"] },
+        { mangaId: mangaBySlug["jujutsu-kaisen"], genreId: genreBySlug["supernatural"] },
+        { mangaId: mangaBySlug["jujutsu-kaisen"], genreId: genreBySlug["shounen"] },
+        { mangaId: mangaBySlug["solo-leveling"], genreId: genreBySlug["action"] },
+        { mangaId: mangaBySlug["solo-leveling"], genreId: genreBySlug["fantasy"] },
+        { mangaId: mangaBySlug["demon-slayer"], genreId: genreBySlug["action"] },
+        { mangaId: mangaBySlug["demon-slayer"], genreId: genreBySlug["fantasy"] },
+        { mangaId: mangaBySlug["tower-of-god"], genreId: genreBySlug["adventure"] },
+        { mangaId: mangaBySlug["tower-of-god"], genreId: genreBySlug["fantasy"] },
+        { mangaId: mangaBySlug["chainsaw-man"], genreId: genreBySlug["action"] },
+        { mangaId: mangaBySlug["chainsaw-man"], genreId: genreBySlug["supernatural"] },
+    ]);
 
-    // Path to local chapter images
-    const chapterPath = join(
-        process.cwd(),
-        "..",
-        "web",
-        "public",
-        "manga",
-        "one-piece",
-        "chapter-1",
-    );
-
-    console.log(`📂 Looking for images in: ${chapterPath}`);
-
-    // Check if directory exists and get images
-    let imageFiles: string[] = [];
-    try {
-        imageFiles = readdirSync(chapterPath)
-            .filter((file) => file.endsWith(".avif"))
-            .sort((a, b) => {
-                const numA = parseInt(a.split(".")[0]);
-                const numB = parseInt(b.split(".")[0]);
-                return numA - numB;
-            });
-        console.log(`✅ Found ${imageFiles.length} images`);
-    } catch (error) {
-        console.warn(`⚠️  Could not read chapter images: ${error}`);
-        console.log("📝 Will use placeholder images instead");
-    }
-
-    // Create Chapter 1
-    console.log("📖 Creating Chapter 1...");
-    const [chapter1] = await db
-        .insert(chapters)
-        .values({
-            mangaId: onePiece.id,
-            number: 1,
-            title: "Romance Dawn",
-            slug: "chapter-1",
-            pageCount: imageFiles.length || 17,
-        })
-        .returning();
-
-    console.log(`✅ Created Chapter 1`);
-
-    // Upload images to Cloudinary and create pages
-    if (imageFiles.length > 0) {
-        console.log("☁️  Uploading images to Cloudinary...");
-
-        for (let i = 0; i < imageFiles.length; i++) {
-            const fileName = imageFiles[i];
-            const pageNumber = i + 1;
-
-            try {
-                // Read image file
-                const imagePath = join(chapterPath, fileName);
-                const imageBuffer = readFileSync(imagePath);
-
-                // Upload to Cloudinary
-                console.log(
-                    `  📤 Uploading page ${pageNumber}/${imageFiles.length}...`,
-                );
-                const result = await uploadImage(
-                    imageBuffer,
-                    "manga/one-piece/chapter-1",
-                    `page-${pageNumber}`,
-                );
-
-                // Create page record
-                await db.insert(pages).values({
-                    chapterId: chapter1.id,
-                    pageNumber,
-                    imageUrl: result.secure_url,
-                    width: 800,
-                    height: 1200,
-                });
-
-                console.log(`  ✅ Page ${pageNumber} uploaded`);
-            } catch (error) {
-                console.error(
-                    `  ❌ Failed to upload page ${pageNumber}:`,
-                    error,
-                );
-                // Create placeholder page on error
-                await db.insert(pages).values({
-                    chapterId: chapter1.id,
-                    pageNumber,
-                    imageUrl: `https://placehold.co/800x1200/1a1a24/8b5cf6?text=One+Piece+Ch1+Pg${pageNumber}`,
-                    width: 800,
-                    height: 1200,
-                });
-            }
-        }
-    } else {
-        // Use placeholder images
-        console.log("📝 Creating placeholder pages...");
-        const pageData = Array.from({ length: 17 }, (_, i) => ({
-            chapterId: chapter1.id,
-            pageNumber: i + 1,
-            imageUrl: `https://placehold.co/800x1200/1a1a24/8b5cf6?text=One+Piece+Ch1+Pg${i + 1}`,
-            width: 800,
-            height: 1200,
-        }));
-        await db.insert(pages).values(pageData);
-    }
-
-    console.log(`✅ Created ${imageFiles.length || 17} pages for Chapter 1`);
-
-    // Create a few more placeholder chapters
-    console.log("📚 Creating additional chapters...");
-    for (let i = 2; i <= 5; i++) {
-        const [chapter] = await db
-            .insert(chapters)
-            .values({
-                mangaId: onePiece.id,
-                number: i,
-                title: `Chapter ${i}`,
-                slug: `chapter-${i}`,
-                pageCount: 18,
-            })
-            .returning();
-
-        // Create placeholder pages
-        const pageData = Array.from({ length: 18 }, (_, j) => ({
-            chapterId: chapter.id,
-            pageNumber: j + 1,
-            imageUrl: `https://placehold.co/800x1200/1a1a24/8b5cf6?text=One+Piece+Ch${i}+Pg${j + 1}`,
-            width: 800,
-            height: 1200,
-        }));
-        await db.insert(pages).values(pageData);
-    }
-
-    console.log(`✅ Created 4 additional chapters`);
+    console.log("✅ Linked genres to manga");
+    await cache.delPattern("manga:list:*");
+    await cache.delPattern("manga:*");
     console.log("🎉 Seeding complete!");
     process.exit(0);
 }

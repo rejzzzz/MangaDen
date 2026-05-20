@@ -1,10 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
-import { jwtVerify } from "jose";
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const jwtSecret = process.env.SUPABASE_JWT_SECRET || "";
 
 // Admin client (for server-side operations)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
@@ -12,16 +10,16 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);
 // Anon client (for client-side operations)
 export const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
 
-// JWT verification for token validation
+// Token validation via Supabase Auth (supports current Supabase JWT signing setup)
 export async function verifySupabaseToken(token: string) {
     try {
-        if (!jwtSecret) {
-            throw new Error("SUPABASE_JWT_SECRET not configured");
-        }
-
-        const secret = new TextEncoder().encode(jwtSecret);
-        const verified = await jwtVerify(token, secret);
-        return verified.payload;
+        const { data, error } = await supabaseAdmin.auth.getUser(token);
+        if (error || !data.user) return null;
+        return {
+            sub: data.user.id,
+            email: data.user.email,
+            aud: data.user.aud,
+        };
     } catch (error) {
         console.error("Token verification failed:", error);
         return null;

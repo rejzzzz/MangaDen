@@ -6,6 +6,7 @@ import UserMenu from "./UserMenu";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/browse", label: "Browse" },
+  { href: "/trending", label: "Trending" },
   { href: "/latest", label: "Latest" },
 ];
 ---
@@ -47,9 +48,9 @@ const navLinks = [
     left: 0;
     right: 0;
     z-index: 100;
-    background: rgba(10, 10, 15, 0.95);
+    background: color-mix(in srgb, var(--color-bg-primary) 92%, transparent);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   }
   
   .navbar-container {
@@ -127,6 +128,7 @@ const navLinks = [
   @media (max-width: 768px) {
     .mobile-menu {
       display: block;
+      flex: 0 0 auto;
     }
     
     .nav-links {
@@ -136,13 +138,26 @@ const navLinks = [
     .search-desktop {
       display: none;
     }
-    
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 0 0 auto;
+    }
+
     :global(.user-menu) {
-      display: none;
+      display: block !important;
+      flex: 0 0 auto;
+    }
+
+    .logo-text {
+      font-size: 1rem;
     }
     
     .navbar-container {
       justify-content: space-between;
+      gap: 0.5rem;
     }
   }
 </style>

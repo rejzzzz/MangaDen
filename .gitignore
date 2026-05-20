@@ -60,3 +60,5 @@ backend/drizzle/
 
 # Props/Test data (optional - remove if needed in production)
 props/
+
+AGENTS.md

@@ -3,6 +3,7 @@ import { extractToken, getUserFromToken } from "../lib/supabase-auth.js";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/index.js";
 import { eq } from "drizzle-orm";
+import { getCookie } from "hono/cookie";
 
 export async function authMiddleware(c: Context, next: Next) {
     // Try to get token from Authorization header first (for API clients)
@@ -11,7 +12,7 @@ export async function authMiddleware(c: Context, next: Next) {
 
     // If not in header, try to get from cookies
     if (!token) {
-        token = c.req.cookie("access_token") || null;
+        token = getCookie(c, "access_token") || null;
     }
 
     if (!token) {

@@ -23,6 +23,15 @@ const { title, description = "Read your favorite manga and manhwa online for fre
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>{title} | MangaDen</title>
+    <script is:inline>
+      {`(() => {
+        try {
+          const saved = localStorage.getItem("theme");
+          const theme = saved === "light" || saved === "dark" ? saved : "dark";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch {}
+      })();`}
+    </script>
   </head>
   <body>
     <slot />
