@@ -13,7 +13,8 @@ dist
 coverage
 .astro
 props
-apps/*/node_modules
-apps/*/.env
-apps/*/dist
-apps/*/.astro
+frontend
+backend/node_modules
+backend/.env
+backend/dist
+backend/.astro
