@@ -1,6 +1,6 @@
 # MangaDen 📚
 
-A modern manga reading platform built with Astro, React, and Hono.
+A modern manga reading platform built with Astro, React, and Hono. Designed for independent frontend and backend deployment.
 
 ## Tech Stack
 
@@ -27,12 +27,28 @@ A modern manga reading platform built with Astro, React, and Hono.
 
 ```
 mangaden/
-├── apps/
-│   ├── api/          # Hono backend API
-│   └── web/          # Astro frontend
-├── packages/
-│   └── shared/       # Shared types and utilities
-└── docker-compose.yml
+├── backend/              # Hono backend API
+│   ├── src/
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── drizzle.config.ts
+├── frontend/             # Astro frontend
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── astro.config.mjs
+├── docker/               # Docker configuration
+│   ├── Dockerfile.backend
+│   └── Dockerfile.frontend
+├── scripts/              # Utility scripts
+│   ├── setup.sh
+│   ├── setup.ps1
+│   ├── docker-build.sh
+│   └── docker-build.ps1
+├── docker-compose.yml    # Production orchestration
+├── vercel.json          # Vercel deployment config
+├── package.json         # Root workspace config
+└── README.md
 ```
 
 ## Prerequisites
@@ -49,19 +65,33 @@ mangaden/
 pnpm install
 ```
 
-### 2. Configure Environment Variables
+Or use the setup script:
 
-**Backend** (`apps/api/.env`):
+**Linux/macOS:**
 
 ```bash
-cp apps/api/.env.example apps/api/.env
-# Edit apps/api/.env with your credentials
+./scripts/setup.sh
 ```
 
-**Frontend** (`apps/web/.env`):
+**Windows (PowerShell):**
+
+```powershell
+.\scripts\setup.ps1
+```
+
+### 2. Configure Environment Variables
+
+**Backend** (`backend/.env`):
 
 ```bash
-cp apps/web/.env.example apps/web/.env
+cp backend/.env.example backend/.env
+# Edit backend/.env with your credentials
+```
+
+**Frontend** (`frontend/.env`):
+
+```bash
+cp frontend/.env.example frontend/.env
 ```
 
 ### 3. Run Database Migrations
@@ -73,7 +103,7 @@ pnpm db:migrate
 ### 4. (Optional) Seed Database
 
 ```bash
-pnpm --filter @mangaden/api db:seed
+pnpm db:seed
 ```
 
 ### 5. Start Development Servers
@@ -93,16 +123,16 @@ This runs both frontend and backend concurrently:
 
 ```bash
 pnpm dev              # Run both frontend and backend
-pnpm dev:api          # Run backend only
-pnpm dev:web          # Run frontend only
+pnpm dev:backend      # Run backend only
+pnpm dev:frontend     # Run frontend only
 ```
 
 ### Build
 
 ```bash
 pnpm build            # Build both apps
-pnpm build:api        # Build backend only
-pnpm build:web        # Build frontend only
+pnpm build:backend    # Build backend only
+pnpm build:frontend   # Build frontend only
 ```
 
 ### Database
@@ -111,51 +141,86 @@ pnpm build:web        # Build frontend only
 pnpm db:generate      # Generate migrations
 pnpm db:migrate       # Run migrations
 pnpm db:studio        # Open Drizzle Studio
+pnpm db:seed          # Seed database with sample data
 ```
 
 ### Docker (Production)
 
 ```bash
-docker-compose up -d          # Start containers
-docker-compose down           # Stop containers
-docker-compose logs -f        # View logs
+pnpm docker:build     # Build Docker images
+pnpm docker:up        # Start containers
+pnpm docker:down      # Stop containers
+pnpm docker:logs      # View logs
+pnpm docker:restart   # Restart containers
 ```
 
 ## Production Deployment
 
-### Using Docker
+### Using Docker Compose
 
-1. **Build and start containers:**
+1. **Configure environment variables:**
+
+```bash
+cp backend/.env.example backend/.env
+# Edit backend/.env with production credentials
+```
+
+2. **Build and start containers:**
+
+```bash
+pnpm docker:up --build
+```
+
+Or manually:
 
 ```bash
 docker-compose up -d --build
 ```
 
-2. **Check health:**
+3. **Check health:**
 
 ```bash
 docker-compose ps
 ```
 
-3. **View logs:**
+4. **View logs:**
 
 ```bash
-docker-compose logs -f api
-docker-compose logs -f web
+docker-compose logs -f backend
 ```
 
-### Using Vercel
+### Using Vercel (Frontend Only)
 
-The project is configured for Vercel deployment:
+The frontend is configured for Vercel deployment:
 
 1. Push to GitHub
 2. Import project in Vercel
 3. Add environment variables
 4. Deploy
 
+Vercel will automatically:
+
+- Build the frontend using `pnpm --filter mangaden-frontend build`
+- Deploy to `frontend/dist`
+
+### Independent Deployment
+
+**Backend:**
+
+- Deploy `backend/` directory to any Node.js hosting (Heroku, Railway, Render, etc.)
+- Ensure environment variables are set
+- Run `pnpm dev` or `pnpm build && pnpm start`
+
+**Frontend:**
+
+- Deploy to Vercel, Netlify, or any static host
+- Update `PUBLIC_API_URL` environment variable to point to backend
+
 ## Environment Variables
 
-### Required for Backend
+### Backend (`backend/.env`)
+
+**Required:**
 
 - `DATABASE_URL` - Supabase PostgreSQL connection string
 - `SUPABASE_URL` - Supabase project URL
@@ -167,10 +232,14 @@ The project is configured for Vercel deployment:
 - `CLOUDINARY_API_KEY` - Cloudinary API key
 - `CLOUDINARY_API_SECRET` - Cloudinary API secret
 
-### Optional OAuth
+**Optional OAuth:**
 
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`
 - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`
+
+### Frontend (`frontend/.env`)
+
+- `PUBLIC_API_URL` - Backend API URL (default: http://localhost:3000)
 
 ## Features
 
@@ -193,6 +262,36 @@ GET    /api/chapters/:id/pages    # Get chapter pages
 POST   /api/auth/*             # Authentication
 POST   /api/upload             # Upload images (admin)
 ```
+
+## Troubleshooting
+
+### Port Already in Use
+
+If port 3000 or 4321 is already in use:
+
+**Backend:**
+
+```bash
+PORT=3001 pnpm dev:backend
+```
+
+**Frontend:**
+
+```bash
+pnpm dev:frontend -- --port 4322
+```
+
+### Database Connection Issues
+
+1. Verify `DATABASE_URL` is correct
+2. Check Supabase project is active
+3. Run migrations: `pnpm db:migrate`
+
+### Docker Build Fails
+
+1. Ensure Docker is running
+2. Check disk space: `docker system df`
+3. Clean up: `docker system prune`
 
 ## License
 

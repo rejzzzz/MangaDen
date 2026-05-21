@@ -11,7 +11,7 @@ coverage/
 # Production
 dist/
 build/
-apps/api/api/
+backend/api/
 
 # Environment
 .env
@@ -42,10 +42,10 @@ Thumbs.db
 
 # Astro
 .astro/
-apps/web/.astro/
+frontend/.astro/
 
 # Drizzle
-apps/api/drizzle/
+backend/drizzle/
 
 # Temporary files
 *.tmp
@@ -54,9 +54,12 @@ apps/api/drizzle/
 
 # Docker
 # (Dockerfiles should be committed)
+docker-compose.override.yml
 
 # Vercel
 .vercel
 
 # Props/Test data (optional - remove if needed in production)
 props/
+
+AGENTS.md

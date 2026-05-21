@@ -1,0 +1,15 @@
+# local development override for Docker Compose
+# Copy this file to `docker-compose.override.yml` for local Docker testing.
+# This file is ignored by git and won't affect production.
+
+services:
+    mangaden-backend:
+        ports:
+            - "3000:3000" # Expose container port 3000 to host port 3000 locally
+        env_file:
+            - backend/.env # Use local development env variables
+        environment:
+            - NODE_ENV=development
+
+# To run this locally, you must first create the network if it doesn't exist:
+# docker network create apps-network
