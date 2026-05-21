@@ -42,9 +42,7 @@ app.get("/", (c) => {
 
 app.get("/health", (c) => {
     return c.json({
-        success: true,
-        status: "healthy",
-        timestamp: new Date().toISOString(),
+        ok: true,
     });
 });
 

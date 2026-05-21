@@ -1,32 +1,38 @@
-# Production Dockerfile - No bundling, run with tsx
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Install pnpm
+FROM node:20-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy workspace files
-COPY package.json pnpm-lock.yaml ./
+FROM base AS builder
+WORKDIR /app
 
-# Copy backend package.json
-COPY backend/package.json ./backend/
+# Cache layer for pnpm fetch
+COPY pnpm-lock.yaml ./
+RUN pnpm fetch
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Copy full workspace and install offline
+COPY . .
+RUN pnpm install --frozen-lockfile --offline
 
-# Copy source code
-COPY backend ./backend
+# Build the backend
+RUN pnpm --filter backend run build:node
 
-# Set working directory
-WORKDIR /app/backend
+# Deploy only production dependencies of backend to /app/out
+RUN pnpm deploy --filter backend --prod /app/out
 
-# Expose port
+# Copy the built files into the deployed directory
+RUN cp -r backend/dist /app/out/dist
+
+FROM base AS runner
+WORKDIR /app
+
+# Copy the optimized production build from builder
+COPY --from=builder /app/out .
+
 EXPOSE 3000
 
-# Health check
+# Alpine uses wget instead of curl by default
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Start with tsx (no build needed)
-CMD ["pnpm", "dev"]
+CMD ["node", "dist/index.js"]

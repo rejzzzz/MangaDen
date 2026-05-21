@@ -54,6 +54,7 @@ backend/drizzle/
 
 # Docker
 # (Dockerfiles should be committed)
+docker-compose.override.yml
 
 # Vercel
 .vercel

@@ -9,6 +9,7 @@ console.log(`🚀 MangaDen API starting on port ${port}`);
 serve({
     fetch: app.fetch,
     port,
+    hostname: "0.0.0.0",
 });
 
 console.log(`✅ Server running at http://localhost:${port}`);

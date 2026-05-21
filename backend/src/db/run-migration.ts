@@ -40,7 +40,7 @@ async function runMigration() {
         console.log(`Found ${statements.length} statements to execute.`);
 
         for (let i = 0; i < statements.length; i++) {
-            const stmt = statements[i];
+            const stmt = statements[i]!;
             try {
                 await sql.unsafe(stmt);
                 console.log(`  ✅ Statement ${i + 1}/${statements.length} executed.`);

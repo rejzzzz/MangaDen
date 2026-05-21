@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "tsx watch src/index.ts",
         "build": "esbuild ./src/vercel.ts --bundle --platform=node --target=node20 --format=esm --outfile=./api/index.js --external:dotenv",
+        "build:node": "node build.js",
         "start": "node api/index.js",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit push",
@@ -29,7 +30,8 @@
         "pdfjs-dist": "^5.6.205",
         "postgres": "^3.4.0",
         "sharp": "^0.34.5",
-        "zod": "^3.22.0"
+        "zod": "^3.22.0",
+        "@mangaden/shared": "workspace:*"
     },
     "devDependencies": {
         "@types/node": "^20.10.0",
