@@ -63,3 +63,5 @@ docker-compose.override.yml
 props/
 
 AGENTS.md
+
+docs/
