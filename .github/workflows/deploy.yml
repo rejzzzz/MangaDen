@@ -3,7 +3,7 @@ name: Deploy Backend to DigitalOcean
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -20,7 +20,7 @@ jobs:
           envs: ENV_FILE
           script: |
             cd /opt/apps/mangaden
-            git pull origin dev
+            git pull origin main
             mkdir -p backend
             printf '%s' "$ENV_FILE" > backend/.env.production
             docker compose up -d --build mangaden-backend
