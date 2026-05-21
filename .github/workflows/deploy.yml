@@ -18,4 +18,8 @@ jobs:
           script: |
             cd /opt/apps/mangaden
             git pull origin dev
+            mkdir -p backend
+            cat > backend/.env.production << 'EOF'
+            ${{ secrets.ENV_FILE }}
+            EOF
             docker compose up -d --build mangaden-backend
