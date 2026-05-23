@@ -20,6 +20,9 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.2.0
         version: 0.2.2(hono@4.11.8)(zod@3.25.76)
+      '@mangaden/shared':
+        specifier: workspace:*
+        version: link:../packages/shared
       '@supabase/supabase-js':
         specifier: ^2.95.3
         version: 2.95.3
