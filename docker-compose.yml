@@ -9,8 +9,8 @@ services:
             dockerfile: docker/Dockerfile.backend
         container_name: mangaden-backend
         restart: unless-stopped
-        expose:
-            - "3000"
+        ports:
+            - "127.0.0.1:3000:3000"
         environment:
             - NODE_ENV=production
             - PORT=3000
