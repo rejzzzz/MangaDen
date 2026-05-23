@@ -4,10 +4,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'backend/**'
+      - 'docker/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/deploy.yml'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: mangaden-api-prod
     steps:
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@master
