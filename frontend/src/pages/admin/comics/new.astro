@@ -1,0 +1,40 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import { MangaForm } from "../../../components/admin/MangaForm";
+---
+
+<AdminLayout title="Add New Comic" description="Create a new comic entry" activePath="/admin/comics/new">
+    <div class="header-actions">
+        <h2>Add New Comic</h2>
+        <p class="subtitle">Fill out the details below to add a new manga, manhwa, or webtoon to your library.</p>
+    </div>
+    
+    <div class="mt-xl">
+        <MangaForm client:load />
+    </div>
+</AdminLayout>
+
+<style>
+    .header-actions {
+        margin-bottom: var(--space-xl);
+    }
+    
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: var(--space-xs);
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .subtitle {
+        color: var(--color-text-secondary);
+        font-size: 1.1rem;
+    }
+    
+    .mt-xl {
+        margin-top: var(--space-xl);
+    }
+</style>

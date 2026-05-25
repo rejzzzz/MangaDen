@@ -1,0 +1,334 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import "../styles/admin.css";
+
+
+interface Props {
+  title: string;
+  description?: string;
+  activePath?: string;
+}
+
+const { title, description = "MangaDen Admin Dashboard", activePath = "/admin/dashboard" } = Astro.props;
+
+// Safe to read locals here because Astro middleware populates it for /admin
+const user = Astro.locals.user;
+
+const navItems = [
+  { label: "Dashboard", icon: "📊", href: "/admin/dashboard" },
+  { label: "Manga Library", icon: "📚", href: "/admin/comics" },
+  { label: "Upload Center", icon: "☁️", href: "/admin/comics/new" },
+  { label: "Users", icon: "👥", href: "/admin/users" },
+  { label: "Settings", icon: "⚙️", href: "/admin/settings" },
+];
+---
+
+<BaseLayout title={`Admin | ${title}`} description={description}>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar glass">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">MD</span>
+          <span class="logo-text gradient-text">MangaDen</span>
+        </div>
+        <span class="badge">Admin</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          {navItems.map((item) => (
+            <li>
+              <a 
+                href={item.href} 
+                class={`nav-link ${activePath === item.href || activePath.startsWith(item.href) && item.href !== "/admin/dashboard" ? "active" : ""}`}
+              >
+                <span class="nav-icon">{item.icon}</span>
+                <span class="nav-label">{item.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="avatar">
+            {user?.name?.charAt(0).toUpperCase() || "A"}
+          </div>
+          <div class="user-info">
+            <span class="user-name">{user?.name || "Admin User"}</span>
+            <span class="user-role">{user?.role}</span>
+          </div>
+        </div>
+        <a href="/" class="btn-exit" title="Back to site">
+          <span>Exit Admin</span>
+          <span>🚪</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <header class="admin-topbar glass">
+        <h1 class="page-title">{title}</h1>
+        <div class="topbar-actions">
+          <button class="icon-btn" aria-label="Notifications">
+            🔔
+          </button>
+          <button class="icon-btn" aria-label="Search">
+            🔍
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Content -->
+      <div class="admin-content animate-slide-up">
+        <slot />
+      </div>
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .admin-layout {
+    display: flex;
+    height: 100vh;
+    background: var(--color-bg-secondary);
+    overflow: hidden;
+  }
+
+  /* --- Sidebar --- */
+  .admin-sidebar {
+    width: 280px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--color-bg-card);
+    z-index: 10;
+    transition: var(--transition-base);
+  }
+
+  .sidebar-header {
+    padding: var(--space-xl) var(--space-lg);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 1rem;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-full);
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+    font-weight: 600;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: var(--space-lg) var(--space-md);
+    overflow-y: auto;
+  }
+
+  .sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    transition: var(--transition-base);
+    font-weight: 500;
+  }
+
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary);
+    transform: translateX(4px);
+  }
+
+  .nav-link.active {
+    background: var(--color-accent-glow);
+    color: var(--color-text-primary);
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .nav-icon {
+    font-size: 1.2rem;
+  }
+
+  .sidebar-footer {
+    padding: var(--space-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .user-profile {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    text-transform: capitalize;
+  }
+
+  .btn-exit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-error);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition-base);
+  }
+
+  .btn-exit:hover {
+    background: rgba(239, 68, 68, 0.2);
+  }
+
+  /* --- Main Content --- */
+  .admin-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .admin-main::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle, var(--color-accent-glow) 0%, transparent 60%);
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .admin-topbar {
+    height: 72px;
+    padding: 0 var(--space-2xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--color-bg-card);
+    z-index: 5;
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .topbar-actions {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary);
+    transition: var(--transition-base);
+    font-size: 1.1rem;
+  }
+
+  .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .admin-content {
+    flex: 1;
+    padding: var(--space-2xl);
+    overflow-y: auto;
+    z-index: 1;
+    position: relative;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-sidebar {
+      position: absolute;
+      transform: translateX(-100%);
+    }
+    
+    .admin-content {
+      padding: var(--space-md);
+    }
+  }
+</style>

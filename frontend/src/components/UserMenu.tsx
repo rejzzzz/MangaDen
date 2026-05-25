@@ -77,7 +77,7 @@ export default function UserMenu() {
                                         <div className="email">{user.email}</div>
                                     </div>
                                 </div>
-                                {user.isAdmin && (
+                                {user.role === "admin" && (
                                     <div className="dropdown-item admin-badge">
                                         Admin
                                     </div>

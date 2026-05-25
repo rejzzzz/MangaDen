@@ -5,9 +5,10 @@ import { supabaseAdmin } from "../lib/supabase-auth.js";
 import { db } from "../db/index.js";
 import { users } from "../db/schema/index.js";
 import { eq } from "drizzle-orm";
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { authMiddleware, AppEnv } from "../middleware/auth.middleware.js";
+import { setCookie, deleteCookie } from "hono/cookie";
 
-export const authRoutes = new Hono();
+export const authRoutes = new Hono<AppEnv>();
 
 const signUpSchema = z.object({
     email: z.string().email(),
@@ -20,16 +21,29 @@ const signInSchema = z.object({
     password: z.string(),
 });
 
-// Helper to set secure cookies
+/**
+ * Sets access and refresh tokens in HttpOnly, secure cookies.
+ */
 function setAuthCookies(c: any, accessToken: string, refreshToken: string) {
     const oneDay = 24 * 60 * 60; // 1 day in seconds
     const sevenDays = 7 * 24 * 60 * 60; // 7 days in seconds
-    const secureAttr = process.env.NODE_ENV === "production" ? "; Secure" : "";
+    const isProduction = process.env.NODE_ENV === "production";
 
-    c.header("Set-Cookie", [
-        `access_token=${accessToken}; Max-Age=${oneDay}; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
-        `refresh_token=${refreshToken}; Max-Age=${sevenDays}; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
-    ]);
+    setCookie(c, "access_token", accessToken, {
+        path: "/",
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+        maxAge: oneDay,
+    });
+
+    setCookie(c, "refresh_token", refreshToken, {
+        path: "/",
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+        maxAge: sevenDays,
+    });
 }
 
 // POST /api/auth/sign-up
@@ -80,7 +94,7 @@ authRoutes.post("/sign-up", zValidator("json", signUpSchema), async (c) => {
                 email,
                 username,
                 passwordHash: "", // Not used with Supabase Auth
-                isAdmin: false,
+                role: "user",
             })
             .returning();
 
@@ -270,13 +284,22 @@ authRoutes.post("/refresh", async (c) => {
 
 // POST /api/auth/sign-out
 authRoutes.post("/sign-out", async (c) => {
-    const secureAttr = process.env.NODE_ENV === "production" ? "; Secure" : "";
+    const isProduction = process.env.NODE_ENV === "production";
 
-    // Clear cookies by setting Max-Age to 0
-    c.header("Set-Cookie", [
-        `access_token=; Max-Age=0; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
-        `refresh_token=; Max-Age=0; Path=/; HttpOnly${secureAttr}; SameSite=Strict`,
-    ]);
+    // Clear cookies by setting Max-Age to 0 using helper
+    deleteCookie(c, "access_token", {
+        path: "/",
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+    });
+
+    deleteCookie(c, "refresh_token", {
+        path: "/",
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "Strict",
+    });
 
     return c.json({
         success: true,

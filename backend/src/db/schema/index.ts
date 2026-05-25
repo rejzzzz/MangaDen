@@ -13,6 +13,8 @@ import {
 import { relations } from "drizzle-orm";
 
 // Enums
+export const userRoleEnum = pgEnum("user_role", ["user", "admin", "moderator"]);
+
 export const mangaStatusEnum = pgEnum("manga_status", [
     "ongoing",
     "completed",
@@ -34,7 +36,7 @@ export const users = pgTable("users", {
     username: varchar("username", { length: 50 }).unique().notNull(),
     passwordHash: text("password_hash").notNull(),
     avatarUrl: text("avatar_url"),
-    isAdmin: boolean("is_admin").default(false).notNull(),
+    role: userRoleEnum("role").default("user").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

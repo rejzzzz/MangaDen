@@ -93,6 +93,9 @@ importers:
       '@astrojs/vercel':
         specifier: ^9.0.4
         version: 9.0.4(astro@5.17.1(@types/node@20.19.32)(@upstash/redis@1.36.2)(@vercel/functions@2.2.13)(ioredis@5.9.2)(rollup@4.57.1)(tsx@4.21.0)(typescript@5.9.3))(react@19.2.4)(rollup@4.57.1)
+      '@mangaden/shared':
+        specifier: workspace:*
+        version: link:../packages/shared
       '@supabase/supabase-js':
         specifier: ^2.95.3
         version: 2.95.3

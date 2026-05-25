@@ -1,0 +1,300 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import { api } from "../../lib/api";
+
+// Ensure server-side rendering for this route
+// export const prerender = false;
+
+// Pagination params
+const pageParam = Astro.url.searchParams.get("page") || "1";
+const page = parseInt(pageParam, 10);
+const limit = 10;
+
+// Fetch mangas from API
+const response = await api.getManga({ page, limit });
+const mangas = response.data || [];
+const totalMangas = 150; // Mock total for now, or get from pagination meta if available
+const totalPages = Math.ceil(totalMangas / limit); // Fallback logic if API doesn't return total
+
+// For pagination links
+const prevPage = page > 1 ? `/admin/dashboard?page=${page - 1}` : null;
+const nextPage = mangas.length === limit ? `/admin/dashboard?page=${page + 1}` : null;
+---
+
+<AdminLayout title="Dashboard" description="Overview of the MangaDen platform">
+  <div class="dashboard-header">
+    <div>
+      <h2 class="title">Library Overview</h2>
+      <p class="subtitle">Manage your comic collection and view quick stats.</p>
+    </div>
+    <a href="/admin/comics/new" class="btn btn-primary">
+      <span>➕</span>
+      <span>Add New Manga</span>
+    </a>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card glass">
+      <div class="stat-icon purple">📚</div>
+      <div class="stat-info">
+        <span class="stat-label">Total Comics</span>
+        <span class="stat-value">{totalMangas}+</span>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-icon pink">👥</div>
+      <div class="stat-info">
+        <span class="stat-label">Active Users</span>
+        <span class="stat-value">1,245</span>
+      </div>
+    </div>
+    <div class="stat-card glass">
+      <div class="stat-icon green">☁️</div>
+      <div class="stat-info">
+        <span class="stat-label">Storage Used</span>
+        <span class="stat-value">45.2 GB</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container glass">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Type</th>
+          <th>Views</th>
+          <th>Last Updated</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {mangas.length === 0 ? (
+          <tr>
+            <td colspan="6" class="empty-state">
+              No comics found. <a href="/admin/comics/new">Create one</a>
+            </td>
+          </tr>
+        ) : (
+          mangas.map((manga) => (
+            <tr>
+              <td>
+                <div class="manga-cell">
+                  {manga.coverUrl ? (
+                    <img src={manga.coverUrl} alt={manga.title} class="manga-thumb" />
+                  ) : (
+                    <div class="manga-thumb fallback">MD</div>
+                  )}
+                  <div>
+                    <div class="manga-title">{manga.title}</div>
+                    <div class="manga-slug">{manga.slug}</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class={`status-badge ${manga.status}`}>{manga.status}</span>
+              </td>
+              <td class="capitalize">{manga.type}</td>
+              <td>{(manga.viewCount || 0).toLocaleString()}</td>
+              <td>{new Date(manga.updatedAt).toLocaleDateString()}</td>
+              <td class="text-right">
+                <div class="actions">
+                  <a href={`/admin/comics/${manga.slug}/chapters`} class="action-btn" title="Manage Chapters">
+                    📄
+                  </a>
+                  <a href={`/admin/comics/${manga.slug}/edit`} class="action-btn" title="Edit Comic">
+                    ✏️
+                  </a>
+                </div>
+              </td>
+            </tr>
+          ))
+        )}
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <div class="pagination-info">
+        Showing page {page}
+      </div>
+      <div class="pagination-controls">
+        {prevPage ? (
+          <a href={prevPage} class="btn-page">← Previous</a>
+        ) : (
+          <button class="btn-page" disabled>← Previous</button>
+        )}
+        
+        {nextPage ? (
+          <a href={nextPage} class="btn-page">Next →</a>
+        ) : (
+          <button class="btn-page" disabled>Next →</button>
+        )}
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<style>
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--space-xl);
+  }
+
+  .title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+  }
+
+  /* --- Stats Grid --- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .stat-card {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .stat-icon.purple {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+  }
+
+  .stat-icon.pink {
+    background: rgba(236, 72, 153, 0.1);
+    color: #ec4899;
+  }
+
+  .stat-icon.green {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-label {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  /* Manga Cell */
+  .manga-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .manga-thumb {
+    width: 40px;
+    height: 56px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+  }
+
+  .manga-thumb.fallback {
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+
+  .manga-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .manga-slug {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* Badges */
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  .status-badge.ongoing {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
+
+  .status-badge.completed {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  .status-badge.hiatus {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+  }
+  
+  .status-badge.cancelled {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+
+  /* Actions */
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    transition: var(--transition-base);
+  }
+
+  .action-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+</style>
+

@@ -73,7 +73,7 @@ export interface User {
     email: string;
     username: string;
     avatarUrl?: string;
-    isAdmin: boolean;
+    role: "user" | "admin" | "moderator";
     createdAt: string;
 }
 
@@ -92,3 +92,14 @@ export interface Genre {
     name: string;
     slug: string;
 }
+
+// ============ Upload/PDF Job Types ============
+export interface PdfJob {
+    id: string;
+    chapterId: string;
+    status: "pending" | "processing" | "completed" | "failed";
+    pagesCount?: number;
+    error?: string;
+    createdAt: number;
+}
+
