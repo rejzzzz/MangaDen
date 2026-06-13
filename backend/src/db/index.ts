@@ -3,7 +3,7 @@ import postgres from "postgres";
 import * as schema from "./schema/index.js";
 import "dotenv/config";
 
-const connectionString = process.env.DATABASE_URL!;
+const connectionString = process.env.DB_DIRECT_POOLER_URL || process.env.DATABASE_URL!;
 
 // For query purposes
 const queryClient = postgres(connectionString, {

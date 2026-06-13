@@ -5,10 +5,10 @@ import { db } from "../db/index.js";
 import { favorites, manga, readingProgress, users } from "../db/schema/index.js";
 import { eq, and } from "drizzle-orm";
 import { cache } from "../lib/cache/redis.js";
-import { authMiddleware } from "../middleware/auth.middleware.js";
+import { authMiddleware, AppEnv } from "../middleware/auth.middleware.js";
 import { uploadImage } from "../lib/storage/cloudinary.js";
 
-export const userRoutes = new Hono();
+export const userRoutes = new Hono<AppEnv>();
 
 userRoutes.use("*", authMiddleware);
 

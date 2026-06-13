@@ -5,7 +5,21 @@ import { users } from "../db/schema/index.js";
 import { eq } from "drizzle-orm";
 import { getCookie } from "hono/cookie";
 
-export async function authMiddleware(c: Context, next: Next) {
+/**
+ * Definition of the global Hono environment for MangaDen API.
+ */
+export type AppEnv = {
+    Variables: {
+        user: typeof users.$inferSelect;
+        token: string;
+    };
+};
+
+/**
+ * Middleware to authenticate requests using Supabase tokens from header or cookie.
+ * Injects the authenticated user profile into the context.
+ */
+export async function authMiddleware(c: Context<AppEnv>, next: Next) {
     // Try to get token from Authorization header first (for API clients)
     let authHeader = c.req.header("Authorization");
     let token = extractToken(authHeader);
@@ -60,19 +74,27 @@ export async function authMiddleware(c: Context, next: Next) {
     await next();
 }
 
-export async function adminMiddleware(c: Context, next: Next) {
-    const user = c.get("user");
+/**
+ * Higher-order middleware function to restrict access based on user roles.
+ * Expects the user profile to be injected by authMiddleware.
+ */
+export function roleMiddleware(allowedRoles: string[]) {
+    return async (c: Context<AppEnv>, next: Next) => {
+        const user = c.get("user");
 
-    if (!user || !user.isAdmin) {
-        return c.json(
-            {
-                success: false,
-                error: "Forbidden",
-                message: "Admin access required",
-            },
-            403,
-        );
-    }
+        if (!user || !allowedRoles.includes(user.role)) {
+            return c.json(
+                {
+                    success: false,
+                    error: "Forbidden",
+                    message: "Insufficient permissions",
+                },
+                403,
+            );
+        }
 
-    await next();
+        await next();
+    };
 }
+
+export const adminMiddleware = roleMiddleware(["admin"]);

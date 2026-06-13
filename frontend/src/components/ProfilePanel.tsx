@@ -135,7 +135,7 @@ export default function ProfilePanel() {
             </div>
             <div className="row info-row">
                 <span className="label">Role</span>
-                <span className="value">{user.isAdmin ? "Admin" : "User"}</span>
+                <span className="value" style={{ textTransform: "capitalize" }}>{user.role}</span>
             </div>
         </section>
     );

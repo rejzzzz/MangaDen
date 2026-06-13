@@ -1,0 +1,286 @@
+---
+import AdminLayout from "../../../../../layouts/AdminLayout.astro";
+import { UploadManager } from "../../../../../components/admin/UploadManager";
+import { api } from "../../../../../lib/api";
+
+// export const prerender = false;
+
+const { slug } = Astro.params;
+let comicData = null;
+
+try {
+    if (slug) {
+        const response = await api.getMangaBySlug(slug);
+        if (response.success && response.data) {
+            comicData = response.data;
+        }
+    }
+} catch (e) {
+    console.error("Failed to fetch comic:", e);
+}
+
+if (!comicData) {
+    return Astro.redirect("/admin/dashboard?error=not-found");
+}
+
+const chapters = comicData.chapters || [];
+// Sort chapters descending by number
+chapters.sort((a: any, b: any) => b.number - a.number);
+---
+
+<AdminLayout title={`Chapters | ${comicData.title}`} description="Manage chapters" activePath="/admin/comics">
+    <div class="header-actions">
+        <div class="title-group">
+            <a href="/admin/dashboard" class="back-link">← Back to Dashboard</a>
+            <h2>Manage Chapters</h2>
+            <p class="subtitle">Comic: <strong>{comicData.title}</strong></p>
+        </div>
+        
+        <button class="btn btn-primary" id="btn-add-chapter">
+            <span>➕</span>
+            <span>New Chapter</span>
+        </button>
+    </div>
+
+    <!-- Hidden form to add a chapter -->
+    <div id="add-chapter-dialog" class="dialog glass hidden">
+        <h3>Add New Chapter</h3>
+        <div class="dialog-content">
+            <div class="form-group">
+                <label for="chapter-num">Chapter Number</label>
+                <input type="number" id="chapter-num" min="1" step="1" value={chapters.length > 0 ? Math.floor(chapters[0].number) + 1 : 1} />
+            </div>
+            <div class="form-group">
+                <label for="chapter-title">Chapter Title (Optional)</label>
+                <input type="text" id="chapter-title" placeholder="e.g. The Beginning" />
+            </div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="btn-cancel-chapter">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-chapter" data-manga-id={comicData.id}>Create</button>
+            </div>
+            <div id="add-error" class="error-text alert error hidden"></div>
+        </div>
+    </div>
+
+    <div class="chapters-grid">
+        {chapters.length === 0 ? (
+            <div class="empty-state glass">
+                <span class="empty-icon">📄</span>
+                <h3>No Chapters Yet</h3>
+                <p>Click "New Chapter" to add the first chapter.</p>
+            </div>
+        ) : (
+            chapters.map((chapter: any) => (
+                <div class="chapter-card glass">
+                    <div class="chapter-header">
+                        <div class="chapter-info">
+                            <span class="chapter-badge">Chapter {chapter.number}</span>
+                            {chapter.title && <h4 class="chapter-title">{chapter.title}</h4>}
+                        </div>
+                        <div class="chapter-actions">
+                            <span class="page-count">{chapter.pageCount || 0} pages</span>
+                            <button class="icon-btn delete-chapter-btn" data-id={chapter.id} title="Delete Chapter">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="chapter-body">
+                        <UploadManager client:load chapterId={chapter.id} />
+                    </div>
+                </div>
+            ))
+        )}
+    </div>
+</AdminLayout>
+
+<script>
+    import { adminApi } from "../../../../../lib/admin-api";
+
+    const btnAdd = document.getElementById('btn-add-chapter');
+    const dialog = document.getElementById('add-chapter-dialog');
+    const btnCancel = document.getElementById('btn-cancel-chapter');
+    const btnSave = document.getElementById('btn-save-chapter');
+    const errorText = document.getElementById('add-error');
+    
+    // Dialog Toggle
+    btnAdd?.addEventListener('click', () => {
+        dialog?.classList.remove('hidden');
+    });
+
+    btnCancel?.addEventListener('click', () => {
+        dialog?.classList.add('hidden');
+        if (errorText) errorText.classList.add('hidden');
+    });
+
+    // Create Chapter
+    btnSave?.addEventListener('click', async () => {
+        const mangaId = btnSave.getAttribute('data-manga-id');
+        const numInput = document.getElementById('chapter-num') as HTMLInputElement;
+        const titleInput = document.getElementById('chapter-title') as HTMLInputElement;
+        
+        if (!mangaId || !numInput.value) return;
+
+        btnSave.textContent = "Creating...";
+        btnSave.setAttribute('disabled', 'true');
+        if (errorText) errorText.classList.add('hidden');
+
+        const val = parseFloat(numInput.value);
+        if (isNaN(val) || !Number.isInteger(val) || val <= 0) {
+            if (errorText) {
+                errorText.textContent = "⚠️ Chapter number must be a positive integer.";
+                errorText.classList.remove('hidden');
+            }
+            btnSave.textContent = "Create";
+            btnSave.removeAttribute('disabled');
+            return;
+        }
+        
+        const payload = {
+            number: val,
+            title: titleInput.value || undefined,
+            slug: `chapter-${val}`
+        };
+
+        const res = await adminApi.createChapter(mangaId, payload);
+        
+        if (res.success) {
+            window.location.reload();
+        } else {
+            if (errorText) {
+                errorText.textContent = `⚠️ ${res.error || res.message || "Failed to create chapter"}`;
+                errorText.classList.remove('hidden');
+            }
+            btnSave.textContent = "Create";
+            btnSave.removeAttribute('disabled');
+        }
+    });
+
+    // Delete Chapter
+    const deleteBtns = document.querySelectorAll('.delete-chapter-btn');
+    deleteBtns.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            if (!confirm('Are you sure you want to delete this chapter? This cannot be undone.')) return;
+            
+            const btnEl = e.currentTarget as HTMLButtonElement;
+            const chapterId = btnEl.getAttribute('data-id');
+            if (!chapterId) return;
+
+            btnEl.disabled = true;
+            btnEl.style.opacity = '0.5';
+
+            const res = await adminApi.deleteChapter(chapterId);
+            if (res.success) {
+                window.location.reload();
+            } else {
+                alert(res.error || "Failed to delete chapter");
+                btnEl.disabled = false;
+                btnEl.style.opacity = '1';
+            }
+        });
+    });
+</script>
+
+<style>
+    .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: var(--space-xl);
+    }
+    
+    .back-link {
+        color: var(--color-accent);
+        font-size: 0.9rem;
+        margin-bottom: var(--space-sm);
+        display: inline-block;
+        font-weight: 500;
+    }
+
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: var(--space-xs);
+    }
+
+    .subtitle {
+        color: var(--color-text-secondary);
+        font-size: 1.1rem;
+    }
+
+    strong {
+        color: var(--color-text-primary);
+    }
+
+    /* Chapters Grid */
+    .chapters-grid {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-lg);
+    }
+
+    .chapter-card {
+        padding: var(--space-lg);
+        border-radius: var(--radius-lg);
+    }
+
+    .chapter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-lg);
+        padding-bottom: var(--space-md);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .chapter-info {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .chapter-badge {
+        background: rgba(139, 92, 246, 0.1);
+        color: #a78bfa;
+        padding: 0.3rem 0.8rem;
+        border-radius: var(--radius-full);
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .chapter-title {
+        font-size: 1.1rem;
+        color: var(--color-text-primary);
+    }
+
+    .chapter-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+    }
+
+    .page-count {
+        color: var(--color-text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .icon-btn {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--color-error);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition-fast);
+    }
+
+    .icon-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: translateY(-2px);
+    }
+</style>

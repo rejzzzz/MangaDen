@@ -12,11 +12,13 @@
         "db:migrate": "drizzle-kit push",
         "db:studio": "drizzle-kit studio",
         "db:seed": "tsx src/db/seed.ts",
+        "db:set-role": "tsx src/db/promote-user.ts",
         "test:connections": "tsx test-connections.ts"
     },
     "dependencies": {
         "@hono/node-server": "^1.8.0",
         "@hono/zod-validator": "^0.2.0",
+        "@mangaden/shared": "workspace:*",
         "@supabase/supabase-js": "^2.95.3",
         "@types/sharp": "^0.32.0",
         "@upstash/redis": "^1.36.2",
@@ -26,12 +28,12 @@
         "drizzle-orm": "^0.45.1",
         "hono": "^4.0.0",
         "jsonwebtoken": "^9.0.3",
+        "pdf-to-png-converter": "^4.1.0",
         "pdf2pic": "^3.2.0",
         "pdfjs-dist": "^5.6.205",
         "postgres": "^3.4.0",
         "sharp": "^0.34.5",
-        "zod": "^3.22.0",
-        "@mangaden/shared": "workspace:*"
+        "zod": "^3.22.0"
     },
     "devDependencies": {
         "@types/node": "^20.10.0",

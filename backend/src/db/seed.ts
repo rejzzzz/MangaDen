@@ -106,25 +106,37 @@ async function seed() {
     const insertedManga = await db.insert(manga).values(mangaData).returning();
     console.log(`✅ Created ${insertedManga.length} manga`);
 
-    const genreBySlug = Object.fromEntries(insertedGenres.map((g) => [g.slug, g.id]));
-    const mangaBySlug = Object.fromEntries(insertedManga.map((m) => [m.slug, m.id]));
+    const genreBySlug = Object.fromEntries(insertedGenres.map((g) => [g.slug, g.id])) as Record<string, string>;
+    const mangaBySlug = Object.fromEntries(insertedManga.map((m) => [m.slug, m.id])) as Record<string, string>;
+
+    const getMangaId = (slug: string): string => {
+        const id = mangaBySlug[slug];
+        if (!id) throw new Error(`Manga slug "${slug}" not found in seeded data`);
+        return id;
+    };
+
+    const getGenreId = (slug: string): string => {
+        const id = genreBySlug[slug];
+        if (!id) throw new Error(`Genre slug "${slug}" not found in seeded data`);
+        return id;
+    };
 
     await db.insert(mangaToGenres).values([
-        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["action"] },
-        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["adventure"] },
-        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["fantasy"] },
-        { mangaId: mangaBySlug["one-piece"], genreId: genreBySlug["shounen"] },
-        { mangaId: mangaBySlug["jujutsu-kaisen"], genreId: genreBySlug["action"] },
-        { mangaId: mangaBySlug["jujutsu-kaisen"], genreId: genreBySlug["supernatural"] },
-        { mangaId: mangaBySlug["jujutsu-kaisen"], genreId: genreBySlug["shounen"] },
-        { mangaId: mangaBySlug["solo-leveling"], genreId: genreBySlug["action"] },
-        { mangaId: mangaBySlug["solo-leveling"], genreId: genreBySlug["fantasy"] },
-        { mangaId: mangaBySlug["demon-slayer"], genreId: genreBySlug["action"] },
-        { mangaId: mangaBySlug["demon-slayer"], genreId: genreBySlug["fantasy"] },
-        { mangaId: mangaBySlug["tower-of-god"], genreId: genreBySlug["adventure"] },
-        { mangaId: mangaBySlug["tower-of-god"], genreId: genreBySlug["fantasy"] },
-        { mangaId: mangaBySlug["chainsaw-man"], genreId: genreBySlug["action"] },
-        { mangaId: mangaBySlug["chainsaw-man"], genreId: genreBySlug["supernatural"] },
+        { mangaId: getMangaId("one-piece"), genreId: getGenreId("action") },
+        { mangaId: getMangaId("one-piece"), genreId: getGenreId("adventure") },
+        { mangaId: getMangaId("one-piece"), genreId: getGenreId("fantasy") },
+        { mangaId: getMangaId("one-piece"), genreId: getGenreId("shounen") },
+        { mangaId: getMangaId("jujutsu-kaisen"), genreId: getGenreId("action") },
+        { mangaId: getMangaId("jujutsu-kaisen"), genreId: getGenreId("supernatural") },
+        { mangaId: getMangaId("jujutsu-kaisen"), genreId: getGenreId("shounen") },
+        { mangaId: getMangaId("solo-leveling"), genreId: getGenreId("action") },
+        { mangaId: getMangaId("solo-leveling"), genreId: getGenreId("fantasy") },
+        { mangaId: getMangaId("demon-slayer"), genreId: getGenreId("action") },
+        { mangaId: getMangaId("demon-slayer"), genreId: getGenreId("fantasy") },
+        { mangaId: getMangaId("tower-of-god"), genreId: getGenreId("adventure") },
+        { mangaId: getMangaId("tower-of-god"), genreId: getGenreId("fantasy") },
+        { mangaId: getMangaId("chainsaw-man"), genreId: getGenreId("action") },
+        { mangaId: getMangaId("chainsaw-man"), genreId: getGenreId("supernatural") },
     ]);
 
     console.log("✅ Linked genres to manga");

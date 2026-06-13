@@ -1,0 +1,61 @@
+---
+import AdminLayout from "../../../../layouts/AdminLayout.astro";
+import { MangaForm } from "../../../../components/admin/MangaForm";
+import { api } from "../../../../lib/api";
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+let comicData = null;
+
+try {
+    if (slug) {
+        const response = await api.getMangaBySlug(slug);
+        if (response.success && response.data) {
+            comicData = response.data;
+        }
+    }
+} catch (e) {
+    console.error("Failed to fetch comic:", e);
+}
+
+if (!comicData) {
+    return Astro.redirect("/admin/dashboard?error=not-found");
+}
+---
+
+<AdminLayout title={`Edit | ${comicData.title}`} description="Edit comic details" activePath="/admin/comics">
+    <div class="header-actions">
+        <h2>Edit Comic</h2>
+        <p class="subtitle">Modifying: <strong>{comicData.title}</strong></p>
+    </div>
+    
+    <div class="mt-xl">
+        <MangaForm client:load initialData={comicData} isEdit={true} />
+    </div>
+</AdminLayout>
+
+<style>
+    .header-actions {
+        margin-bottom: var(--space-xl);
+    }
+    
+    h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: var(--space-xs);
+    }
+    
+    .subtitle {
+        color: var(--color-text-secondary);
+        font-size: 1.1rem;
+    }
+    
+    strong {
+        color: var(--color-text-primary);
+    }
+    
+    .mt-xl {
+        margin-top: var(--space-xl);
+    }
+</style>

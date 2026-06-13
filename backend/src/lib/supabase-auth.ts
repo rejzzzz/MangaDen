@@ -27,11 +27,11 @@ export async function verifySupabaseToken(token: string) {
 }
 
 // Extract token from Authorization header
-export function extractToken(authHeader: string | null): string | null {
+export function extractToken(authHeader: string | null | undefined): string | null {
     if (!authHeader) return null;
     const parts = authHeader.split(" ");
     if (parts.length !== 2 || parts[0] !== "Bearer") return null;
-    return parts[1];
+    return parts[1] || null;
 }
 
 // Get user from token

@@ -5,9 +5,12 @@ export interface AuthUser {
     email: string;
     username: string;
     avatarUrl?: string | null;
-    isAdmin: boolean;
+    role: "user" | "admin" | "moderator";
 }
 
+/**
+ * Registers a new user with their email, password, and username.
+ */
 export async function signUp(email: string, password: string, username: string) {
     try {
         const response = await fetch(`${API_BASE}/api/auth/sign-up`, {
@@ -27,6 +30,9 @@ export async function signUp(email: string, password: string, username: string) 
     }
 }
 
+/**
+ * Signs in a user using their email and password.
+ */
 export async function signIn(email: string, password: string) {
     try {
         const response = await fetch(`${API_BASE}/api/auth/sign-in`, {
@@ -46,6 +52,9 @@ export async function signIn(email: string, password: string) {
     }
 }
 
+/**
+ * Signs out the currently authenticated session.
+ */
 export async function signOut() {
     try {
         await fetch(`${API_BASE}/api/auth/sign-out`, {
@@ -58,6 +67,9 @@ export async function signOut() {
     return { data: null };
 }
 
+/**
+ * Retrieves the currently authenticated user's session profile.
+ */
 export async function getCurrentUser(): Promise<AuthUser | null> {
     try {
         const response = await fetch(`${API_BASE}/api/auth/me`, {

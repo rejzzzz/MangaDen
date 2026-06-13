@@ -4,6 +4,7 @@ export interface PdfJob {
     id: string;
     chapterId: string;
     status: "pending" | "processing" | "completed" | "failed";
+    filePath?: string;
     pagesCount?: number;
     error?: string;
     createdAt: number;
@@ -12,11 +13,12 @@ export interface PdfJob {
 const JOB_TTL = 86400;
 
 export const pdfQueue = {
-    async createJob(chapterId: string): Promise<string> {
+    async createJob(chapterId: string, filePath: string): Promise<string> {
         const jobId = `pdf-${chapterId}-${Date.now()}`;
         const job: PdfJob = {
             id: jobId,
             chapterId,
+            filePath,
             status: "pending",
             createdAt: Date.now(),
         };

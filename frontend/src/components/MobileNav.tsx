@@ -82,7 +82,7 @@ export default function MobileNav() {
 
         {/* Footer Section */}
         <div className="menu-footer">
-          <a href="/login" className="login-btn">
+          <a href="/?login=true" className="login-btn">
             Sign In
           </a>
           <p className="footer-text">Your ultimate manga destination</p>

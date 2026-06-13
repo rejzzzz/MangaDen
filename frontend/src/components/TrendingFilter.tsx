@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api, type TrendingResult } from "../lib/api";
+import "./TrendingFilter.css";
 
 interface TrendingFilterProps {
     onDataChange: (data: TrendingResult | null, loading: boolean) => void;
@@ -43,12 +44,12 @@ export default function TrendingFilter({ onDataChange }: TrendingFilterProps) {
     };
 
     return (
-        <div class="trending-filter">
-            <div class="filter-buttons">
+        <div className="trending-filter">
+            <div className="filter-buttons">
                 {periods.map((period) => (
                     <button
                         key={period.value}
-                        class={`filter-btn ${activePeriod === period.value ? "active" : ""
+                        className={`filter-btn ${activePeriod === period.value ? "active" : ""
                             }`}
                         onClick={() => handlePeriodChange(period.value)}
                         disabled={loading}
@@ -60,55 +61,3 @@ export default function TrendingFilter({ onDataChange }: TrendingFilterProps) {
         </div>
     );
 }
-
-<style>
-    .trending-filter {
-        margin - bottom: 2rem;
-    }
-
-    .filter-buttons {
-        display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    }
-
-    .filter-btn {
-        padding: 0.75rem 1.5rem;
-    border: 2px solid color-mix(in srgb, var(--color-text-primary) 20%, transparent);
-    background: transparent;
-    color: var(--color-text-secondary);
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    font-size: 0.95rem;
-    }
-
-    .filter-btn:hover:not(:disabled) {
-        border - color: color-mix(in srgb, var(--color-text-primary) 40%, transparent);
-    color: var(--color-text-primary);
-    }
-
-    .filter-btn.active {
-        background: var(--gradient-primary);
-    border-color: transparent;
-    color: white;
-    }
-
-    .filter-btn:disabled {
-        opacity: 0.6;
-    cursor: not-allowed;
-    }
-
-    @media (max-width: 768px) {
-        .filter - buttons {
-        gap: 0.5rem;
-        }
-
-    .filter-btn {
-        padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-        }
-    }
-</style>

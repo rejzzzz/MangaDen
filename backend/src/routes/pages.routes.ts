@@ -11,6 +11,12 @@ import {
     authMiddleware,
     adminMiddleware,
 } from "../middleware/auth.middleware.js";
+import os from "os";
+import path from "path";
+import fs from "fs/promises";
+import { randomUUID } from "crypto";
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export const pagesRoutes = new Hono();
 
@@ -32,14 +38,36 @@ pagesRoutes.post(
     adminMiddleware,
     async (c) => {
         const chapterId = c.req.param("chapterId");
-        const body = await c.req.parseBody();
+        console.log(`[Upload] Starting PDF upload for chapter: ${chapterId}`);
+
+        let body;
+        try {
+            console.log(`[Upload] Parsing request body...`);
+            body = await c.req.parseBody();
+            console.log(`[Upload] Request body parsed successfully.`);
+        } catch (e: any) {
+            console.error(`[Upload] Failed to parse request body:`, e.message);
+            return c.json({ success: false, error: "Failed to parse body" }, 400);
+        }
+
         const file = body["file"];
 
         if (!file || !(file instanceof File)) {
+            console.error(`[Upload] No valid PDF file uploaded.`);
             return c.json(
                 { success: false, error: "No PDF file uploaded" },
                 400,
             );
+        }
+
+        console.log(`[Upload] File received: name=${file.name}, type=${file.type}, size=${file.size}`);
+
+        if (file.type !== "application/pdf") {
+            return c.json({ success: false, error: "File must be a PDF" }, 400);
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+            return c.json({ success: false, error: "File size exceeds 50MB limit" }, 413);
         }
 
         const chapter = await db.query.chapters.findFirst({
@@ -47,14 +75,21 @@ pagesRoutes.post(
         });
 
         if (!chapter) {
+            console.error(`[Upload] Chapter ${chapterId} not found.`);
             return c.json({ success: false, error: "Chapter not found" }, 404);
         }
 
-        const pdfBuffer = Buffer.from(await file.arrayBuffer());
-        const jobId = await pdfQueue.createJob(chapterId);
+        const tempFilePath = path.join(os.tmpdir(), `upload-${randomUUID()}.pdf`);
+        console.log(`[Upload] Saving temp file to: ${tempFilePath}`);
+        const arrayBuffer = await file.arrayBuffer();
+        await fs.writeFile(tempFilePath, Buffer.from(arrayBuffer));
+        console.log(`[Upload] Temp file saved successfully.`);
+
+        const jobId = await pdfQueue.createJob(chapterId, tempFilePath);
+        console.log(`[Upload] Job created: ${jobId}, triggering background processing...`);
 
         // Process asynchronously
-        processPdfToPages(pdfBuffer, chapterId)
+        processPdfToPages(tempFilePath, chapterId)
             .then(async (processedPages) => {
                 const inserted = await db
                     .insert(pages)

@@ -138,6 +138,40 @@ mangaRoutes.post("/:slug/view", async (c) => {
     return c.json({ success: true, counted: true });
 });
 
+import { uploadImage } from "../lib/storage/cloudinary.js";
+
+// POST /api/manga/upload-cover - Upload cover image (admin only)
+mangaRoutes.post(
+    "/upload-cover",
+    authMiddleware,
+    adminMiddleware,
+    async (c) => {
+        const body = await c.req.parseBody();
+        const file = body["file"];
+
+        if (!file || !(file instanceof File)) {
+            return c.json({ success: false, error: "No image file uploaded" }, 400);
+        }
+
+        if (!file.type.startsWith("image/")) {
+            return c.json({ success: false, error: "File must be an image" }, 400);
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            return c.json({ success: false, error: "Image size exceeds 5MB limit" }, 413);
+        }
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const { secure_url } = await uploadImage(Buffer.from(arrayBuffer), "covers");
+            return c.json({ success: true, data: { url: secure_url } }, 201);
+        } catch (error: any) {
+            console.error("Cover upload failed:", error);
+            return c.json({ success: false, error: error.message || "Upload failed" }, 500);
+        }
+    }
+);
+
 // POST /api/manga - Create manga (admin only)
 mangaRoutes.post(
     "/",
