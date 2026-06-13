@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import type { PdfJob } from "@mangaden/shared/types";
 import { adminApi } from "../../lib/admin-api";
+import { PageList } from "./PageList";
 
 interface UploadManagerProps {
     chapterId: string;
@@ -18,6 +19,7 @@ export function UploadManager({ chapterId, onUploadComplete }: UploadManagerProp
     const [jobId, setJobId] = useState<string | null>(null);
     const [jobStatus, setJobStatus] = useState<PdfJob | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Poll for job status
@@ -37,6 +39,7 @@ export function UploadManager({ chapterId, onUploadComplete }: UploadManagerProp
                         setJobId(null);
                         setUploading(false);
                         setFile(null);
+                        setRefreshTrigger(prev => prev + 1);
                         if (onUploadComplete) onUploadComplete();
                     } else if (status.status === "failed") {
                         clearInterval(interval);
@@ -213,6 +216,8 @@ export function UploadManager({ chapterId, onUploadComplete }: UploadManagerProp
                     </div>
                 </div>
             )}
+
+            <PageList chapterId={chapterId} refreshTrigger={refreshTrigger} />
 
             <style dangerouslySetInnerHTML={{__html: `
                 .upload-manager {

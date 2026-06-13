@@ -23,6 +23,7 @@ app.use(
             "http://localhost:4321",
             "http://localhost:3000",
             "https://mangaden.rejwanul.dev",
+            "https://manga-den-frontend.vercel.app",
         ],
         credentials: true,
     }),

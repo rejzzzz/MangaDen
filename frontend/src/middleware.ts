@@ -20,7 +20,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
         // Fail loudly: If there is no token, boot them out immediately.
         if (!accessToken) {
-            return context.redirect("/sign-in");
+            return context.redirect("/?login=true");
         }
 
         try {
@@ -34,7 +34,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
             });
 
             if (!response.ok) {
-                return context.redirect("/sign-in");
+                return context.redirect("/?login=true");
             }
 
             const data = await response.json();
@@ -43,14 +43,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
             // RBAC Check: Ensure the user is an admin or moderator
             if (!user || (user.role !== "admin" && user.role !== "moderator")) {
                 console.warn(`[Security] Blocked unauthorized access attempt to ${context.url.pathname} by user: ${user?.email || 'Unknown'}`);
-                return context.redirect("/"); // Redirect unauthorized users to home
+                return context.redirect("/"); // Redirect unauthorized users to home (no modal needed, just rejected)
             }
 
             // Successfully authenticated and authorized
             context.locals.user = user;
         } catch (err) {
             console.error("[Security] Middleware auth check failed:", err);
-            return context.redirect("/sign-in");
+            return context.redirect("/?login=true");
         }
     }
 

@@ -11,6 +11,7 @@ export function MangaForm({ initialData, isEdit = false }: MangaFormProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
+    const [uploadingCover, setUploadingCover] = useState(false);
     
     // Form state
     const [formData, setFormData] = useState({
@@ -152,16 +153,30 @@ export function MangaForm({ initialData, isEdit = false }: MangaFormProps) {
                         </div>
                         
                         <div className="form-group mt-4">
-                            <label htmlFor="coverUrl">Cover Image URL</label>
+                            <label>Upload Cover Image</label>
                             <input 
-                                type="url" 
-                                id="coverUrl" 
-                                name="coverUrl" 
-                                value={formData.coverUrl}
-                                onChange={handleChange}
-                                placeholder="https://..." 
+                                type="file" 
+                                accept="image/*"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    setUploadingCover(true);
+                                    try {
+                                        const res = await adminApi.uploadCover(file);
+                                        if (res.success && res.data?.url) {
+                                            setFormData(prev => ({ ...prev, coverUrl: res.data!.url }));
+                                        } else {
+                                            setError(res.error || "Failed to upload cover image.");
+                                        }
+                                    } catch (err: any) {
+                                        setError(err.message || "Upload failed");
+                                    } finally {
+                                        setUploadingCover(false);
+                                    }
+                                }}
+                                disabled={uploadingCover}
                             />
-                            <span className="help-text">Direct link to the cover image. Cloudinary upload coming soon.</span>
+                            {uploadingCover && <span className="help-text" style={{color: '#8b5cf6'}}>Uploading to Cloudinary...</span>}
                         </div>
                     </div>
 

@@ -27,6 +27,14 @@ export default function UserMenu() {
         return () => window.removeEventListener("click", close);
     }, []);
 
+    useEffect(() => {
+        if (typeof window !== "undefined" && window.location.search.includes("login=true")) {
+            setShowModal(true);
+            // Optional: clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }, []);
+
     const handleLogout = async () => {
         await signOut();
         setUser(null);
@@ -78,9 +86,9 @@ export default function UserMenu() {
                                     </div>
                                 </div>
                                 {user.role === "admin" && (
-                                    <div className="dropdown-item admin-badge">
-                                        Admin
-                                    </div>
+                                    <a className="dropdown-item admin-badge" href="/admin/dashboard">
+                                        Admin Dashboard
+                                    </a>
                                 )}
                                 <a className="dropdown-item" href="/profile">
                                     Profile

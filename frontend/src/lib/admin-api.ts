@@ -77,12 +77,35 @@ export const adminApi = {
     // ---- Chapter Mutations ----
 
     /**
+     * Uploads a cover image for a manga.
+     */
+    async uploadCover(file: File): Promise<ApiResponse<{ url: string }>> {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch(`${API_URL}/manga/upload-cover`, {
+                method: "POST",
+                credentials: "include",
+                body: formData,
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                return { success: false, error: data.error, message: data.message };
+            }
+            return data as ApiResponse<{ url: string }>;
+        } catch (err: any) {
+            return { success: false, error: "Upload Failed", message: err.message };
+        }
+    },
+
+    /**
      * Creates a new chapter for a specific manga.
      */
     async createChapter(mangaId: string, payload: Partial<Chapter>): Promise<ApiResponse<Chapter>> {
-        return fetchAdmin<Chapter>(`/chapters/manga/${mangaId}`, {
+        return fetchAdmin<Chapter>(`/chapters`, {
             method: "POST",
-            body: JSON.stringify(payload),
+            body: JSON.stringify({ ...payload, mangaId }),
         });
     },
 
@@ -103,11 +126,10 @@ export const adminApi = {
      */
     async uploadPdfPages(chapterId: string, file: File): Promise<ApiResponse<{ jobId: string }>> {
         const formData = new FormData();
-        formData.append("pdf", file);
-        formData.append("chapterId", chapterId);
+        formData.append("file", file);
 
         try {
-            const res = await fetch(`${API_URL}/upload/pdf`, {
+            const res = await fetch(`${API_URL}/pages/chapters/${chapterId}/pdf`, {
                 method: "POST",
                 credentials: "include",
                 // Do not explicitly set Content-Type to application/json so the browser
@@ -122,5 +144,15 @@ export const adminApi = {
         } catch (err: any) {
             return { success: false, error: "Upload Failed", message: err.message };
         }
+    },
+
+    async getUploadJobStatus(jobId: string): Promise<ApiResponse<any>> {
+        return fetchAdmin<any>(`/pages/job/${jobId}`);
+    },
+
+    async deletePage(id: string): Promise<ApiResponse<null>> {
+        return fetchAdmin<null>(`/pages/${id}`, {
+            method: "DELETE",
+        });
     }
 };
