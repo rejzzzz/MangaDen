@@ -24,6 +24,7 @@ app.use(
             "http://localhost:3000",
             "https://mangaden.rejwanul.dev",
             "https://manga-den-frontend.vercel.app",
+            "https://vm-manga-reader-frontend.vusercontent.net/",
         ],
         credentials: true,
     }),
