@@ -9,11 +9,13 @@ import {
     pgEnum,
     unique,
     index,
+    jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 // Enums
 export const userRoleEnum = pgEnum("user_role", ["user", "admin", "moderator"]);
+export const userStatusEnum = pgEnum("user_status", ["active", "suspended", "banned"]);
 
 export const mangaStatusEnum = pgEnum("manga_status", [
     "ongoing",
@@ -37,6 +39,7 @@ export const users = pgTable("users", {
     passwordHash: text("password_hash").notNull(),
     avatarUrl: text("avatar_url"),
     role: userRoleEnum("role").default("user").notNull(),
+    status: userStatusEnum("status").default("active").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -55,6 +58,7 @@ export const manga = pgTable("manga", {
     type: mangaTypeEnum("type").default("manga").notNull(),
     releaseYear: integer("release_year"),
     isNsfw: boolean("is_nsfw").default(false).notNull(),
+    isPublished: boolean("is_published").default(true).notNull(),
     viewCount: integer("view_count").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -247,3 +251,36 @@ export const mangaBookmarks = pgTable(
         index("idx_manga_bookmarks_manga_created").on(t.mangaId, t.createdAt),
     ],
 );
+
+// ============ ADMIN ============
+export const activityLogs = pgTable("activity_logs", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    actorId: uuid("actor_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    actorName: varchar("actor_name", { length: 255 }).notNull(),
+    action: varchar("action", { length: 100 }).notNull(),
+    summary: text("summary").notNull(),
+    targetType: varchar("target_type", { length: 50 }),
+    targetId: varchar("target_id", { length: 255 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const siteSettings = pgTable("site_settings", {
+    id: varchar("id", { length: 50 }).primaryKey().default("default"),
+    siteName: varchar("site_name", { length: 255 }).default("MangaDen").notNull(),
+    siteDescription: text("site_description").default("Read manga online").notNull(),
+    maintenanceMode: boolean("maintenance_mode").default(false).notNull(),
+    maintenanceMessage: text("maintenance_message").default("We are undergoing maintenance.").notNull(),
+    allowRegistration: boolean("allow_registration").default(true).notNull(),
+    requireEmailVerification: boolean("require_email_verification").default(false).notNull(),
+    showNsfwToGuests: boolean("show_nsfw_to_guests").default(false).notNull(),
+    defaultReadingMode: varchar("default_reading_mode", { length: 20 }).default("scroll").notNull(),
+    featuredMangaSlug: varchar("featured_manga_slug", { length: 255 }),
+    features: jsonb("features").default({
+        comments: true,
+        ratings: true,
+        bookmarks: true,
+        readingProgress: true,
+    }).notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+

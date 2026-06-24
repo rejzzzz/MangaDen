@@ -24,6 +24,7 @@ const createMangaSchema = z.object({
     type: z.enum(["manga", "manhwa", "manhua", "webtoon"]).optional(),
     releaseYear: z.number().int().optional(),
     isNsfw: z.boolean().optional(),
+    isPublished: z.boolean().optional(),
 });
 
 const querySchema = z.object({
@@ -49,7 +50,7 @@ mangaRoutes.get("/", zValidator("query", querySchema), async (c) => {
     }
 
     // Build dynamic query with filters
-    const conditions = [];
+    const conditions = [eq(manga.isPublished, true)];
 
     if (search) {
         conditions.push(ilike(manga.title, `%${search}%`));
@@ -194,6 +195,7 @@ mangaRoutes.post(
                 type: body.type,
                 releaseYear: body.releaseYear,
                 isNsfw: body.isNsfw ?? false, // Default to false if undefined
+                isPublished: body.isPublished ?? true, // Default to true if undefined
                 viewCount: 0,
             })
             .returning();

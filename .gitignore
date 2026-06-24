@@ -44,6 +44,14 @@ Thumbs.db
 .astro/
 frontend/.astro/
 
+# Next.js (frontend_v2)
+frontend_v2/.next/
+frontend_v2/out/
+frontend_v2/.swc/
+frontend_v2/.turbo/
+frontend_v2/next-env.d.ts
+frontend_v2/*.tsbuildinfo
+
 # Drizzle
 backend/drizzle/
 

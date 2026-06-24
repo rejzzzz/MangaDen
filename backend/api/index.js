@@ -11100,16 +11100,16 @@ var require_lodash = __commonJS({
           return setToString(wrapper, insertWrapDetails(source, updateWrapDetails(getWrapDetails(source), bitmask)));
         }
         function shortOut(func) {
-          var count = 0, lastCalled = 0;
+          var count2 = 0, lastCalled = 0;
           return function() {
             var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
             lastCalled = stamp;
             if (remaining > 0) {
-              if (++count >= HOT_COUNT) {
+              if (++count2 >= HOT_COUNT) {
                 return arguments[0];
               }
             } else {
-              count = 0;
+              count2 = 0;
             }
             return func.apply(undefined2, arguments);
           };
@@ -13027,7 +13027,7 @@ var require_lodash = __commonJS({
         var subtract = createMathOperation(function(minuend, subtrahend) {
           return minuend - subtrahend;
         }, 0);
-        function sum(array) {
+        function sum2(array) {
           return array && array.length ? baseSum(array, identity) : 0;
         }
         function sumBy(array, iteratee2) {
@@ -13316,7 +13316,7 @@ var require_lodash = __commonJS({
         lodash.startCase = startCase;
         lodash.startsWith = startsWith;
         lodash.subtract = subtract;
-        lodash.sum = sum;
+        lodash.sum = sum2;
         lodash.sumBy = sumBy;
         lodash.template = template;
         lodash.times = times;
@@ -13920,16 +13920,16 @@ var require_shortOut = __commonJS({
     var HOT_SPAN = 16;
     var nativeNow = Date.now;
     function shortOut(func) {
-      var count = 0, lastCalled = 0;
+      var count2 = 0, lastCalled = 0;
       return function() {
         var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
         lastCalled = stamp;
         if (remaining > 0) {
-          if (++count >= HOT_COUNT) {
+          if (++count2 >= HOT_COUNT) {
             return arguments[0];
           }
         } else {
-          count = 0;
+          count2 = 0;
         }
         return func.apply(void 0, arguments);
       };
@@ -27286,10 +27286,10 @@ var init_pdf = __esm({
           // eslint-disable-next-line max-statements -- ok
           sumPrecise: function sumPrecise(items) {
             var numbers = [];
-            var count = 0;
+            var count2 = 0;
             var state = MINUS_ZERO;
             iterate(items, function(n2) {
-              if (++count > MAX_SAFE_INTEGER) throw new $RangeError("Maximum allowed index exceeded");
+              if (++count2 > MAX_SAFE_INTEGER) throw new $RangeError("Maximum allowed index exceeded");
               if (typeof n2 != "number") throw new $TypeError("Value is not a number");
               if (state !== NOT_A_NUMBER) {
                 if (n2 !== n2) state = NOT_A_NUMBER;
@@ -27313,7 +27313,7 @@ var init_pdf = __esm({
             }
             var partials = [];
             var overflow = 0;
-            var x, y, sum, hi, lo, tmp;
+            var x, y, sum2, hi, lo, tmp;
             for (var i = 0; i < numbers.length; i++) {
               x = numbers[i];
               var actuallyUsedPartials = 0;
@@ -27324,9 +27324,9 @@ var init_pdf = __esm({
                   x = y;
                   y = tmp;
                 }
-                sum = twosum(x, y);
-                hi = sum.hi;
-                lo = sum.lo;
+                sum2 = twosum(x, y);
+                hi = sum2.hi;
+                lo = sum2.lo;
                 if (abs(hi) === $Infinity) {
                   var sign = hi === $Infinity ? 1 : -1;
                   overflow += sign;
@@ -27336,9 +27336,9 @@ var init_pdf = __esm({
                     x = y;
                     y = tmp;
                   }
-                  sum = twosum(x, y);
-                  hi = sum.hi;
-                  lo = sum.lo;
+                  sum2 = twosum(x, y);
+                  hi = sum2.hi;
+                  lo = sum2.lo;
                 }
                 if (lo !== 0) partials[actuallyUsedPartials++] = lo;
                 x = hi;
@@ -27355,9 +27355,9 @@ var init_pdf = __esm({
               if (abs(overflow) > 1 || overflow > 0 && next > 0 || overflow < 0 && next < 0) {
                 return overflow > 0 ? $Infinity : -$Infinity;
               }
-              sum = twosum(overflow * POW_2_1023, next / 2);
-              hi = sum.hi;
-              lo = sum.lo;
+              sum2 = twosum(overflow * POW_2_1023, next / 2);
+              hi = sum2.hi;
+              lo = sum2.lo;
               lo *= 2;
               if (abs(2 * hi) === $Infinity) {
                 if (hi > 0) {
@@ -27372,9 +27372,9 @@ var init_pdf = __esm({
               hi *= 2;
             }
             while (n >= 0) {
-              sum = twosum(hi, partials[n--]);
-              hi = sum.hi;
-              lo = sum.lo;
+              sum2 = twosum(hi, partials[n--]);
+              hi = sum2.hi;
+              lo = sum2.lo;
               if (lo !== 0) break;
             }
             if (n >= 0 && (lo < 0 && partials[n] < 0 || lo > 0 && partials[n] > 0)) {
@@ -27926,11 +27926,11 @@ var init_pdf = __esm({
         if (DESCRIPTORS && !("size" in URLSearchParamsPrototype)) {
           defineBuiltInAccessor(URLSearchParamsPrototype, "size", {
             get: function size2() {
-              var count = 0;
+              var count2 = 0;
               forEach(this, function() {
-                count++;
+                count2++;
               });
-              return count;
+              return count2;
             },
             configurable: true,
             enumerable: true
@@ -39264,9 +39264,9 @@ fn fs_main(in : VertexOutput) -> @location(0) vec4<f32> {
         if (!this.contentVisible) {
           return;
         }
-        const count = img.count;
+        const count2 = img.count;
         img = this.getObject(opIdx, img.data, img);
-        img.count = count;
+        img.count = count2;
         const started = this.#beginKnockoutElement(this.current.fillAlpha);
         const ctx = this.ctx;
         const mask = this._createMaskCanvas(opIdx, img);
@@ -50792,7 +50792,7 @@ fn fs_main(in : VertexOutput) -> @location(0) vec4<f32> {
           for (let j = 0; j < width; j++) {
             const ij = i * width + j;
             const center = buf[ij];
-            let sum = 0;
+            let sum2 = 0;
             let norm = 0;
             for (let k = 0; k < kernelSize; k++) {
               const y = i + k - halfSize;
@@ -50806,11 +50806,11 @@ fn fs_main(in : VertexOutput) -> @location(0) vec4<f32> {
                 }
                 const neighbour = buf[y * width + x];
                 const w = kernel[k * kernelSize + l] * rangeValues[Math.abs(neighbour - center)];
-                sum += neighbour * w;
+                sum2 += neighbour * w;
                 norm += w;
               }
             }
-            const pix = out[ij] = Math.round(sum / norm);
+            const pix = out[ij] = Math.round(sum2 / norm);
             histogram[pix]++;
           }
         }
@@ -53962,8 +53962,8 @@ var require_elf = __commonJS({
       }
       const offset = elf.readUInt32LE(32);
       const size2 = elf.readUInt16LE(54);
-      const count = elf.readUInt16LE(56);
-      for (let i = 0; i < count; i++) {
+      const count2 = elf.readUInt16LE(56);
+      for (let i = 0; i < count2; i++) {
         const headerOffset = offset + i * size2;
         const type = elf.readUInt32LE(headerOffset);
         if (type === 3) {
@@ -73138,6 +73138,17 @@ function mapRelationalRow(tablesConfig, tableConfig, row, buildQueryResultSelect
   return result;
 }
 
+// ../node_modules/.pnpm/drizzle-orm@0.45.1_@upstash_8da0c4b26bed1ff83d0f4e96f1d48e5c/node_modules/drizzle-orm/sql/functions/aggregate.js
+function count(expression) {
+  return sql`count(${expression || sql.raw("*")})`.mapWith(Number);
+}
+function countDistinct(expression) {
+  return sql`count(distinct ${expression})`.mapWith(Number);
+}
+function sum(expression) {
+  return sql`sum(${expression})`.mapWith(String);
+}
+
 // ../node_modules/.pnpm/drizzle-orm@0.45.1_@upstash_8da0c4b26bed1ff83d0f4e96f1d48e5c/node_modules/drizzle-orm/pg-core/view-base.js
 var PgViewBase = class extends View {
   static [entityKind] = "PgViewBase";
@@ -76597,6 +76608,7 @@ function drizzle(...params) {
 // src/db/schema/index.ts
 var schema_exports = {};
 __export(schema_exports, {
+  activityLogs: () => activityLogs,
   chapters: () => chapters,
   chaptersRelations: () => chaptersRelations,
   favorites: () => favorites,
@@ -76614,11 +76626,14 @@ __export(schema_exports, {
   pagesRelations: () => pagesRelations,
   readingProgress: () => readingProgress,
   readingProgressRelations: () => readingProgressRelations,
+  siteSettings: () => siteSettings,
   userRoleEnum: () => userRoleEnum,
+  userStatusEnum: () => userStatusEnum,
   users: () => users,
   usersRelations: () => usersRelations
 });
 var userRoleEnum = pgEnum("user_role", ["user", "admin", "moderator"]);
+var userStatusEnum = pgEnum("user_status", ["active", "suspended", "banned"]);
 var mangaStatusEnum = pgEnum("manga_status", [
   "ongoing",
   "completed",
@@ -76638,6 +76653,7 @@ var users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   avatarUrl: text("avatar_url"),
   role: userRoleEnum("role").default("user").notNull(),
+  status: userStatusEnum("status").default("active").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
 });
@@ -76654,6 +76670,7 @@ var manga = pgTable("manga", {
   type: mangaTypeEnum("type").default("manga").notNull(),
   releaseYear: integer("release_year"),
   isNsfw: boolean("is_nsfw").default(false).notNull(),
+  isPublished: boolean("is_published").default(true).notNull(),
   viewCount: integer("view_count").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
@@ -76793,6 +76810,35 @@ var mangaBookmarks = pgTable(
     index("idx_manga_bookmarks_manga_created").on(t.mangaId, t.createdAt)
   ]
 );
+var activityLogs = pgTable("activity_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  actorId: uuid("actor_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  actorName: varchar("actor_name", { length: 255 }).notNull(),
+  action: varchar("action", { length: 100 }).notNull(),
+  summary: text("summary").notNull(),
+  targetType: varchar("target_type", { length: 50 }),
+  targetId: varchar("target_id", { length: 255 }),
+  createdAt: timestamp("created_at").defaultNow().notNull()
+});
+var siteSettings = pgTable("site_settings", {
+  id: varchar("id", { length: 50 }).primaryKey().default("default"),
+  siteName: varchar("site_name", { length: 255 }).default("MangaDen").notNull(),
+  siteDescription: text("site_description").default("Read manga online").notNull(),
+  maintenanceMode: boolean("maintenance_mode").default(false).notNull(),
+  maintenanceMessage: text("maintenance_message").default("We are undergoing maintenance.").notNull(),
+  allowRegistration: boolean("allow_registration").default(true).notNull(),
+  requireEmailVerification: boolean("require_email_verification").default(false).notNull(),
+  showNsfwToGuests: boolean("show_nsfw_to_guests").default(false).notNull(),
+  defaultReadingMode: varchar("default_reading_mode", { length: 20 }).default("scroll").notNull(),
+  featuredMangaSlug: varchar("featured_manga_slug", { length: 255 }),
+  features: jsonb("features").default({
+    comments: true,
+    ratings: true,
+    bookmarks: true,
+    readingProgress: true
+  }).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull()
+});
 
 // src/db/index.ts
 import "dotenv/config";
@@ -78127,8 +78173,8 @@ var LMoveCommand = class extends Command {
 };
 var LmPopCommand = class extends Command {
   constructor(cmd, opts) {
-    const [numkeys, keys, direction, count] = cmd;
-    super(["LMPOP", numkeys, ...keys, direction, ...count ? ["COUNT", count] : []], opts);
+    const [numkeys, keys, direction, count2] = cmd;
+    super(["LMPOP", numkeys, ...keys, direction, ...count2 ? ["COUNT", count2] : []], opts);
   }
 };
 var LPopCommand = class extends Command {
@@ -78424,19 +78470,19 @@ var SMoveCommand = class extends Command {
   }
 };
 var SPopCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["spop", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
 };
 var SRandMemberCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["srandmember", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
@@ -78648,7 +78694,7 @@ var XLenCommand = class extends Command {
   }
 };
 var XPendingCommand = class extends Command {
-  constructor([key, group, start, end, count, options], opts) {
+  constructor([key, group, start, end, count2, options], opts) {
     const consumers = options?.consumer === void 0 ? [] : Array.isArray(options.consumer) ? [...options.consumer] : [options.consumer];
     super(
       [
@@ -78658,7 +78704,7 @@ var XPendingCommand = class extends Command {
         ...options?.idleTime ? ["IDLE", options.idleTime] : [],
         start,
         end,
-        count,
+        count2,
         ...consumers
       ],
       opts
@@ -78688,10 +78734,10 @@ function deserialize6(result) {
   return obj;
 }
 var XRangeCommand = class extends Command {
-  constructor([key, start, end, count], opts) {
+  constructor([key, start, end, count2], opts) {
     const command = ["XRANGE", key, start, end];
-    if (typeof count === "number") {
-      command.push("COUNT", count);
+    if (typeof count2 === "number") {
+      command.push("COUNT", count2);
     }
     super(command, {
       deserialize: (result) => deserialize6(result),
@@ -78745,10 +78791,10 @@ var XReadGroupCommand = class extends Command {
   }
 };
 var XRevRangeCommand = class extends Command {
-  constructor([key, end, start, count], opts) {
+  constructor([key, end, start, count2], opts) {
     const command = ["XREVRANGE", key, end, start];
-    if (typeof count === "number") {
-      command.push("COUNT", count);
+    if (typeof count2 === "number") {
+      command.push("COUNT", count2);
     }
     super(command, {
       deserialize: (result) => deserialize7(result),
@@ -78852,19 +78898,19 @@ var ZLexCountCommand = class extends Command {
   }
 };
 var ZPopMaxCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["zpopmax", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
 };
 var ZPopMinCommand = class extends Command {
-  constructor([key, count], opts) {
+  constructor([key, count2], opts) {
     const command = ["zpopmin", key];
-    if (typeof count === "number") {
-      command.push(count);
+    if (typeof count2 === "number") {
+      command.push(count2);
     }
     super(command, opts);
   }
@@ -79295,7 +79341,7 @@ var Pipeline = class {
   /**
    * @see https://redis.io/commands/hrandfield
    */
-  hrandfield = (key, count, withValues) => this.chain(new HRandFieldCommand([key, count, withValues], this.commandOptions));
+  hrandfield = (key, count2, withValues) => this.chain(new HRandFieldCommand([key, count2, withValues], this.commandOptions));
   /**
    * @see https://redis.io/commands/hscan
    */
@@ -79379,7 +79425,7 @@ var Pipeline = class {
   /**
    * @see https://redis.io/commands/lrem
    */
-  lrem = (key, count, value) => this.chain(new LRemCommand([key, count, value], this.commandOptions));
+  lrem = (key, count2, value) => this.chain(new LRemCommand([key, count2, value], this.commandOptions));
   /**
    * @see https://redis.io/commands/lset
    */
@@ -80073,8 +80119,8 @@ var Subscriber = class extends EventTarget {
         const messageStr = messageData.slice(secondCommaIndex + 1);
         try {
           if (type === "subscribe" || type === "psubscribe" || type === "unsubscribe" || type === "punsubscribe") {
-            const count = Number.parseInt(messageStr);
-            this.dispatchToListeners(type, count);
+            const count2 = Number.parseInt(messageStr);
+            this.dispatchToListeners(type, count2);
           } else {
             const message = this.opts?.automaticDeserialization === false ? messageStr : parseWithTryCatch(messageStr);
             this.dispatchToListeners(type, { channel, message });
@@ -80756,7 +80802,7 @@ var Redis = class {
   /**
    * @see https://redis.io/commands/hrandfield
    */
-  hrandfield = (key, count, withValues) => new HRandFieldCommand([key, count, withValues], this.opts).exec(this.client);
+  hrandfield = (key, count2, withValues) => new HRandFieldCommand([key, count2, withValues], this.opts).exec(this.client);
   /**
    * @see https://redis.io/commands/hscan
    */
@@ -80840,7 +80886,7 @@ var Redis = class {
   /**
    * @see https://redis.io/commands/lrem
    */
-  lrem = (key, count, value) => new LRemCommand([key, count, value], this.opts).exec(this.client);
+  lrem = (key, count2, value) => new LRemCommand([key, count2, value], this.opts).exec(this.client);
   /**
    * @see https://redis.io/commands/lset
    */
@@ -81483,7 +81529,7 @@ var PostgrestBuilder = class {
     }).then(async (res$1) => {
       let error = null;
       let data = null;
-      let count = null;
+      let count2 = null;
       let status = res$1.status;
       let statusText = res$1.statusText;
       if (res$1.ok) {
@@ -81498,7 +81544,7 @@ var PostgrestBuilder = class {
         }
         const countHeader = (_this$headers$get2 = _this.headers.get("Prefer")) === null || _this$headers$get2 === void 0 ? void 0 : _this$headers$get2.match(/count=(exact|planned|estimated)/);
         const contentRange = (_res$headers$get = res$1.headers.get("content-range")) === null || _res$headers$get === void 0 ? void 0 : _res$headers$get.split("/");
-        if (countHeader && contentRange && contentRange.length > 1) count = parseInt(contentRange[1]);
+        if (countHeader && contentRange && contentRange.length > 1) count2 = parseInt(contentRange[1]);
         if (_this.isMaybeSingle && _this.method === "GET" && Array.isArray(data)) if (data.length > 1) {
           error = {
             code: "PGRST116",
@@ -81507,7 +81553,7 @@ var PostgrestBuilder = class {
             message: "JSON object requested, multiple (or no) rows returned"
           };
           data = null;
-          count = null;
+          count2 = null;
           status = 406;
           statusText = "Not Acceptable";
         } else if (data.length === 1) data = data[0];
@@ -81539,7 +81585,7 @@ var PostgrestBuilder = class {
       return {
         error,
         data,
-        count,
+        count: count2,
         status,
         statusText
       };
@@ -81680,9 +81726,9 @@ var PostgrestTransformBuilder = class extends PostgrestBuilder {
   * @param options.foreignTable - Deprecated, use `options.referencedTable`
   * instead
   */
-  limit(count, { foreignTable, referencedTable = foreignTable } = {}) {
+  limit(count2, { foreignTable, referencedTable = foreignTable } = {}) {
     const key = typeof referencedTable === "undefined" ? "limit" : `${referencedTable}.limit`;
-    this.url.searchParams.set(key, `${count}`);
+    this.url.searchParams.set(key, `${count2}`);
     return this;
   }
   /**
@@ -82264,7 +82310,7 @@ var PostgrestQueryBuilder = class {
   * that match your filters, not the number of rows in the current page. Use this to build pagination UI.
   */
   select(columns, options) {
-    const { head: head2 = false, count } = options !== null && options !== void 0 ? options : {};
+    const { head: head2 = false, count: count2 } = options !== null && options !== void 0 ? options : {};
     const method = head2 ? "HEAD" : "GET";
     let quoted = false;
     const cleanedColumns = (columns !== null && columns !== void 0 ? columns : "*").split("").map((c) => {
@@ -82274,7 +82320,7 @@ var PostgrestQueryBuilder = class {
     }).join("");
     const { url, headers } = this.cloneRequestState();
     url.searchParams.set("select", cleanedColumns);
-    if (count) headers.append("Prefer", `count=${count}`);
+    if (count2) headers.append("Prefer", `count=${count2}`);
     return new PostgrestFilterBuilder({
       method,
       url,
@@ -82310,11 +82356,11 @@ var PostgrestQueryBuilder = class {
   * Otherwise, use the default value for the column. Only applies for bulk
   * inserts.
   */
-  insert(values2, { count, defaultToNull = true } = {}) {
+  insert(values2, { count: count2, defaultToNull = true } = {}) {
     var _this$fetch;
     const method = "POST";
     const { url, headers } = this.cloneRequestState();
-    if (count) headers.append("Prefer", `count=${count}`);
+    if (count2) headers.append("Prefer", `count=${count2}`);
     if (!defaultToNull) headers.append("Prefer", `missing=default`);
     if (Array.isArray(values2)) {
       const columns = values2.reduce((acc, x) => acc.concat(Object.keys(x)), []);
@@ -82418,13 +82464,13 @@ var PostgrestQueryBuilder = class {
   * // }
   * ```
   */
-  upsert(values2, { onConflict, ignoreDuplicates = false, count, defaultToNull = true } = {}) {
+  upsert(values2, { onConflict, ignoreDuplicates = false, count: count2, defaultToNull = true } = {}) {
     var _this$fetch2;
     const method = "POST";
     const { url, headers } = this.cloneRequestState();
     headers.append("Prefer", `resolution=${ignoreDuplicates ? "ignore" : "merge"}-duplicates`);
     if (onConflict !== void 0) url.searchParams.set("on_conflict", onConflict);
-    if (count) headers.append("Prefer", `count=${count}`);
+    if (count2) headers.append("Prefer", `count=${count2}`);
     if (!defaultToNull) headers.append("Prefer", "missing=default");
     if (Array.isArray(values2)) {
       const columns = values2.reduce((acc, x) => acc.concat(Object.keys(x)), []);
@@ -82464,11 +82510,11 @@ var PostgrestQueryBuilder = class {
   * `"estimated"`: Uses exact count for low numbers and planned count for high
   * numbers.
   */
-  update(values2, { count } = {}) {
+  update(values2, { count: count2 } = {}) {
     var _this$fetch3;
     const method = "PATCH";
     const { url, headers } = this.cloneRequestState();
-    if (count) headers.append("Prefer", `count=${count}`);
+    if (count2) headers.append("Prefer", `count=${count2}`);
     return new PostgrestFilterBuilder({
       method,
       url,
@@ -82498,11 +82544,11 @@ var PostgrestQueryBuilder = class {
   * `"estimated"`: Uses exact count for low numbers and planned count for high
   * numbers.
   */
-  delete({ count } = {}) {
+  delete({ count: count2 } = {}) {
     var _this$fetch4;
     const method = "DELETE";
     const { url, headers } = this.cloneRequestState();
-    if (count) headers.append("Prefer", `count=${count}`);
+    if (count2) headers.append("Prefer", `count=${count2}`);
     return new PostgrestFilterBuilder({
       method,
       url,
@@ -82676,7 +82722,7 @@ var PostgrestClient = class PostgrestClient2 {
   *   .overrideTypes<{ id: string; user_id: string }[]>()
   * ```
   */
-  rpc(fn, args = {}, { head: head2 = false, get: get2 = false, count } = {}) {
+  rpc(fn, args = {}, { head: head2 = false, get: get2 = false, count: count2 } = {}) {
     var _this$fetch;
     let method;
     const url = new URL(`${this.url}/rpc/${fn}`);
@@ -82696,8 +82742,8 @@ var PostgrestClient = class PostgrestClient2 {
       body = args;
     }
     const headers = new Headers(this.headers);
-    if (_hasObjectArg) headers.set("Prefer", count ? `count=${count},return=minimal` : "return=minimal");
-    else if (count) headers.set("Prefer", `count=${count}`);
+    if (_hasObjectArg) headers.set("Prefer", count2 ? `count=${count2},return=minimal` : "return=minimal");
+    else if (count2) headers.set("Prefer", `count=${count2}`);
     return new PostgrestFilterBuilder({
       method,
       url,
@@ -86028,6 +86074,63 @@ function roleMiddleware(allowedRoles) {
 }
 var adminMiddleware = roleMiddleware(["admin"]);
 
+// src/lib/storage/cloudinary.ts
+var import_cloudinary = __toESM(require_cloudinary2(), 1);
+var configureCloudinary = () => {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  if (!cloudName || !apiKey || !apiSecret) {
+    console.warn(
+      "Cloudinary credentials are not fully set in environment variables."
+    );
+  }
+  import_cloudinary.v2.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+    secure: true
+  });
+};
+var uploadImage = async (fileBuffer, folder, publicId) => {
+  configureCloudinary();
+  return new Promise((resolve, reject) => {
+    const uploadStream = import_cloudinary.v2.uploader.upload_stream(
+      {
+        folder,
+        public_id: publicId,
+        resource_type: "auto"
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+        if (!result) {
+          return reject(
+            new Error(
+              "Cloudinary upload failed: No result returned"
+            )
+          );
+        }
+        resolve({
+          secure_url: result.secure_url,
+          public_id: result.public_id
+        });
+      }
+    );
+    uploadStream.end(fileBuffer);
+  });
+};
+var deleteImage = async (publicId) => {
+  configureCloudinary();
+  try {
+    await import_cloudinary.v2.uploader.destroy(publicId);
+  } catch (error) {
+    console.error("Error deleting image from Cloudinary:", error);
+    throw error;
+  }
+};
+
 // src/routes/manga.routes.ts
 var mangaRoutes = new Hono2();
 var createMangaSchema = external_exports.object({
@@ -86040,7 +86143,8 @@ var createMangaSchema = external_exports.object({
   status: external_exports.enum(["ongoing", "completed", "hiatus", "cancelled"]).optional(),
   type: external_exports.enum(["manga", "manhwa", "manhua", "webtoon"]).optional(),
   releaseYear: external_exports.number().int().optional(),
-  isNsfw: external_exports.boolean().optional()
+  isNsfw: external_exports.boolean().optional(),
+  isPublished: external_exports.boolean().optional()
 });
 var querySchema = external_exports.object({
   page: external_exports.coerce.number().int().positive().default(1),
@@ -86059,7 +86163,7 @@ mangaRoutes.get("/", zValidator("query", querySchema), async (c) => {
       return c.json({ success: true, data: cached, cached: true });
     }
   }
-  const conditions = [];
+  const conditions = [eq(manga.isPublished, true)];
   if (search) {
     conditions.push(ilike(manga.title, `%${search}%`));
   }
@@ -86113,6 +86217,32 @@ mangaRoutes.post("/:slug/view", async (c) => {
   return c.json({ success: true, counted: true });
 });
 mangaRoutes.post(
+  "/upload-cover",
+  authMiddleware,
+  adminMiddleware,
+  async (c) => {
+    const body = await c.req.parseBody();
+    const file = body["file"];
+    if (!file || !(file instanceof File)) {
+      return c.json({ success: false, error: "No image file uploaded" }, 400);
+    }
+    if (!file.type.startsWith("image/")) {
+      return c.json({ success: false, error: "File must be an image" }, 400);
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      return c.json({ success: false, error: "Image size exceeds 5MB limit" }, 413);
+    }
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const { secure_url } = await uploadImage(Buffer.from(arrayBuffer), "covers");
+      return c.json({ success: true, data: { url: secure_url } }, 201);
+    } catch (error) {
+      console.error("Cover upload failed:", error);
+      return c.json({ success: false, error: error.message || "Upload failed" }, 500);
+    }
+  }
+);
+mangaRoutes.post(
   "/",
   authMiddleware,
   adminMiddleware,
@@ -86131,6 +86261,8 @@ mangaRoutes.post(
       releaseYear: body.releaseYear,
       isNsfw: body.isNsfw ?? false,
       // Default to false if undefined
+      isPublished: body.isPublished ?? true,
+      // Default to true if undefined
       viewCount: 0
     }).returning();
     await cache.delPattern("manga:list:*");
@@ -86550,63 +86682,6 @@ authRoutes.get("/me", authMiddleware, async (c) => {
   });
 });
 
-// src/lib/storage/cloudinary.ts
-var import_cloudinary = __toESM(require_cloudinary2(), 1);
-var configureCloudinary = () => {
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-  const apiKey = process.env.CLOUDINARY_API_KEY;
-  const apiSecret = process.env.CLOUDINARY_API_SECRET;
-  if (!cloudName || !apiKey || !apiSecret) {
-    console.warn(
-      "Cloudinary credentials are not fully set in environment variables."
-    );
-  }
-  import_cloudinary.v2.config({
-    cloud_name: cloudName,
-    api_key: apiKey,
-    api_secret: apiSecret,
-    secure: true
-  });
-};
-var uploadImage = async (fileBuffer, folder, publicId) => {
-  configureCloudinary();
-  return new Promise((resolve, reject) => {
-    const uploadStream = import_cloudinary.v2.uploader.upload_stream(
-      {
-        folder,
-        public_id: publicId,
-        resource_type: "auto"
-      },
-      (error, result) => {
-        if (error) {
-          return reject(error);
-        }
-        if (!result) {
-          return reject(
-            new Error(
-              "Cloudinary upload failed: No result returned"
-            )
-          );
-        }
-        resolve({
-          secure_url: result.secure_url,
-          public_id: result.public_id
-        });
-      }
-    );
-    uploadStream.end(fileBuffer);
-  });
-};
-var deleteImage = async (publicId) => {
-  configureCloudinary();
-  try {
-    await import_cloudinary.v2.uploader.destroy(publicId);
-  } catch (error) {
-    console.error("Error deleting image from Cloudinary:", error);
-    throw error;
-  }
-};
-
 // src/routes/upload.routes.ts
 var uploadRoutes = new Hono2();
 uploadRoutes.post("/", async (c) => {
@@ -86749,14 +86824,25 @@ pagesRoutes.post(
   adminMiddleware,
   async (c) => {
     const chapterId = c.req.param("chapterId");
-    const body = await c.req.parseBody();
+    console.log(`[Upload] Starting PDF upload for chapter: ${chapterId}`);
+    let body;
+    try {
+      console.log(`[Upload] Parsing request body...`);
+      body = await c.req.parseBody();
+      console.log(`[Upload] Request body parsed successfully.`);
+    } catch (e) {
+      console.error(`[Upload] Failed to parse request body:`, e.message);
+      return c.json({ success: false, error: "Failed to parse body" }, 400);
+    }
     const file = body["file"];
     if (!file || !(file instanceof File)) {
+      console.error(`[Upload] No valid PDF file uploaded.`);
       return c.json(
         { success: false, error: "No PDF file uploaded" },
         400
       );
     }
+    console.log(`[Upload] File received: name=${file.name}, type=${file.type}, size=${file.size}`);
     if (file.type !== "application/pdf") {
       return c.json({ success: false, error: "File must be a PDF" }, 400);
     }
@@ -86767,12 +86853,16 @@ pagesRoutes.post(
       where: eq(chapters.id, chapterId)
     });
     if (!chapter) {
+      console.error(`[Upload] Chapter ${chapterId} not found.`);
       return c.json({ success: false, error: "Chapter not found" }, 404);
     }
     const tempFilePath = path2.join(os2.tmpdir(), `upload-${randomUUID()}.pdf`);
+    console.log(`[Upload] Saving temp file to: ${tempFilePath}`);
     const arrayBuffer = await file.arrayBuffer();
     await fs3.writeFile(tempFilePath, Buffer.from(arrayBuffer));
+    console.log(`[Upload] Temp file saved successfully.`);
     const jobId = await pdfQueue.createJob(chapterId, tempFilePath);
+    console.log(`[Upload] Job created: ${jobId}, triggering background processing...`);
     processPdfToPages(tempFilePath, chapterId).then(async (processedPages) => {
       const inserted = await db.insert(pages).values(processedPages.map((p) => ({ chapterId, ...p }))).returning();
       await db.update(chapters).set({ pageCount: inserted.length }).where(eq(chapters.id, chapterId));
@@ -87414,6 +87504,302 @@ trendingRoutes.get("/", async (c) => {
   }
 });
 
+// src/services/admin.service.ts
+var AdminService = class {
+  static async getStats() {
+    const thirtyDaysAgo = /* @__PURE__ */ new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const [totalManga] = await db.select({ count: count() }).from(manga);
+    const [totalChapters] = await db.select({ count: count() }).from(chapters);
+    const [totalUsers] = await db.select({ count: count() }).from(users);
+    const [totalViews] = await db.select({ count: sum(manga.viewCount) }).from(manga);
+    const [newMangaThisMonth] = await db.select({ count: count() }).from(manga).where(gte(manga.createdAt, thirtyDaysAgo));
+    const [newUsersThisMonth] = await db.select({ count: count() }).from(users).where(gte(users.createdAt, thirtyDaysAgo));
+    const [viewsThisMonth] = await db.select({ count: count() }).from(mangaViews).where(gte(mangaViews.createdAt, thirtyDaysAgo));
+    const [activeUsers] = await db.select({ count: countDistinct(mangaViews.userId) }).from(mangaViews).where(gte(mangaViews.createdAt, thirtyDaysAgo));
+    return {
+      totalManga: totalManga?.count || 0,
+      totalChapters: totalChapters?.count || 0,
+      totalUsers: totalUsers?.count || 0,
+      totalViews: Number(totalViews?.count) || 0,
+      newMangaThisMonth: newMangaThisMonth?.count || 0,
+      newUsersThisMonth: newUsersThisMonth?.count || 0,
+      viewsThisMonth: viewsThisMonth?.count || 0,
+      activeUsers: activeUsers?.count || 0
+    };
+  }
+  static async getActivity(limit = 20) {
+    return db.select().from(activityLogs).orderBy(desc(activityLogs.createdAt)).limit(limit);
+  }
+  static async logActivity(actorId, actorName, action, summary, targetType, targetId) {
+    await db.insert(activityLogs).values({ actorId, actorName, action, summary, targetType, targetId });
+  }
+  static async getSettings() {
+    const settingsList = await db.select().from(siteSettings).where(eq(siteSettings.id, "default")).limit(1);
+    if (settingsList.length === 0) {
+      const [newSettings] = await db.insert(siteSettings).values({ id: "default" }).returning();
+      return newSettings;
+    }
+    return settingsList[0];
+  }
+  static async updateSettings(data) {
+    const [updated] = await db.update(siteSettings).set({ ...data, updatedAt: /* @__PURE__ */ new Date() }).where(eq(siteSettings.id, "default")).returning();
+    return updated;
+  }
+  static async getAnalytics(period) {
+    let days = 30;
+    if (period === "7d") days = 7;
+    else if (period === "90d") days = 90;
+    const startDate = /* @__PURE__ */ new Date();
+    startDate.setDate(startDate.getDate() - days);
+    const viewsOverTime = await db.select({
+      date: sql`to_char(${mangaViews.createdAt}, 'YYYY-MM-DD')`,
+      value: count()
+    }).from(mangaViews).where(gte(mangaViews.createdAt, startDate)).groupBy(sql`to_char(${mangaViews.createdAt}, 'YYYY-MM-DD')`).orderBy(asc(sql`to_char(${mangaViews.createdAt}, 'YYYY-MM-DD')`));
+    const signupsOverTime = await db.select({
+      date: sql`to_char(${users.createdAt}, 'YYYY-MM-DD')`,
+      value: count()
+    }).from(users).where(gte(users.createdAt, startDate)).groupBy(sql`to_char(${users.createdAt}, 'YYYY-MM-DD')`).orderBy(asc(sql`to_char(${users.createdAt}, 'YYYY-MM-DD')`));
+    const topManga = await db.select({
+      id: manga.id,
+      title: manga.title,
+      slug: manga.slug,
+      views: manga.viewCount
+    }).from(manga).orderBy(desc(manga.viewCount)).limit(10);
+    const typeBreakdown = await db.select({
+      type: manga.type,
+      count: count()
+    }).from(manga).groupBy(manga.type);
+    const statusBreakdown = await db.select({
+      status: manga.status,
+      count: count()
+    }).from(manga).groupBy(manga.status);
+    return {
+      viewsOverTime,
+      signupsOverTime,
+      topManga,
+      typeBreakdown,
+      statusBreakdown
+    };
+  }
+  // Manga Management
+  static async listManga(page, limit, search, status, type) {
+    const offset = (page - 1) * limit;
+    const conditions = [];
+    if (search) conditions.push(ilike(manga.title, `%${search}%`));
+    if (status) conditions.push(eq(manga.status, status));
+    if (type) conditions.push(eq(manga.type, type));
+    const where = conditions.length > 0 ? and(...conditions) : void 0;
+    const results = await db.select().from(manga).where(where).orderBy(desc(manga.createdAt)).limit(limit).offset(offset);
+    const [totalResult] = await db.select({ count: count() }).from(manga).where(where);
+    const total = totalResult?.count || 0;
+    return {
+      data: results,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+  // Users Management
+  static async listUsers(page, limit, search, role, status) {
+    const offset = (page - 1) * limit;
+    const conditions = [];
+    if (search) conditions.push(ilike(users.email, `%${search}%`));
+    if (role) conditions.push(eq(users.role, role));
+    if (status) conditions.push(eq(users.status, status));
+    const where = conditions.length > 0 ? and(...conditions) : void 0;
+    const results = await db.select().from(users).where(where).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
+    const [totalResult] = await db.select({ count: count() }).from(users).where(where);
+    const total = totalResult?.count || 0;
+    return {
+      data: results.map((u) => ({ ...u, passwordHash: void 0 })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
+  }
+};
+
+// src/routes/admin.routes.ts
+var adminRoutes = new Hono2();
+adminRoutes.use("*", authMiddleware, adminMiddleware);
+var getActor = (c) => ({
+  id: c.get("user")?.id || "unknown",
+  name: c.get("user")?.username || "Admin"
+});
+adminRoutes.get("/stats", async (c) => {
+  const stats = await AdminService.getStats();
+  return c.json({ success: true, data: stats });
+});
+adminRoutes.get("/activity", async (c) => {
+  const limit = Number(c.req.query("limit")) || 20;
+  const activity = await AdminService.getActivity(limit);
+  return c.json({ success: true, data: activity });
+});
+adminRoutes.get("/manga", async (c) => {
+  const page = Number(c.req.query("page")) || 1;
+  const limit = Number(c.req.query("limit")) || 20;
+  const search = c.req.query("search");
+  const status = c.req.query("status");
+  const type = c.req.query("type");
+  const result = await AdminService.listManga(page, limit, search, status, type);
+  return c.json({ success: true, ...result });
+});
+adminRoutes.get("/manga/:id", async (c) => {
+  const id = c.req.param("id");
+  const [result] = await db.select().from(manga).where(eq(manga.id, id));
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  return c.json({ success: true, data: result });
+});
+adminRoutes.post("/manga", zValidator("json", external_exports.object({
+  title: external_exports.string(),
+  slug: external_exports.string().optional(),
+  description: external_exports.string(),
+  coverUrl: external_exports.string(),
+  bannerUrl: external_exports.string().optional(),
+  author: external_exports.string(),
+  artist: external_exports.string().optional(),
+  status: external_exports.enum(["ongoing", "completed", "hiatus", "cancelled"]),
+  type: external_exports.enum(["manga", "manhwa", "manhua", "webtoon"]),
+  releaseYear: external_exports.number().optional(),
+  isNsfw: external_exports.boolean()
+})), async (c) => {
+  const body = c.req.valid("json");
+  const slug = body.slug || body.title.toLowerCase().replace(/ /g, "-");
+  const [result] = await db.insert(manga).values({ ...body, slug }).returning();
+  if (!result) return c.json({ success: false, message: "Failed to create" }, 500);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "manga.create", `Created manga "${result.title}"`, "manga", result.id);
+  await cache.delPattern("manga:list:*");
+  return c.json({ success: true, data: result });
+});
+adminRoutes.patch("/manga/:id", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  const [result] = await db.update(manga).set({ ...body, updatedAt: /* @__PURE__ */ new Date() }).where(eq(manga.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "manga.update", `Updated manga "${result.title}"`, "manga", result.id);
+  await cache.del(`manga:${result.slug}`);
+  await cache.delPattern("manga:list:*");
+  return c.json({ success: true, data: result });
+});
+adminRoutes.delete("/manga/:id", async (c) => {
+  const id = c.req.param("id");
+  const [result] = await db.delete(manga).where(eq(manga.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "manga.delete", `Deleted manga "${result.title}"`, "manga", result.id);
+  await cache.del(`manga:${result.slug}`);
+  await cache.delPattern("manga:list:*");
+  return c.json({ success: true, message: "Deleted" });
+});
+adminRoutes.post("/chapters", async (c) => {
+  const body = await c.req.json();
+  const [result] = await db.insert(chapters).values({ ...body, slug: `chapter-${body.number}` }).returning();
+  if (!result) return c.json({ success: false, message: "Failed to create" }, 500);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "chapter.create", `Created chapter ${result.number}`, "chapter", result.id);
+  return c.json({ success: true, data: result });
+});
+adminRoutes.patch("/chapters/:id", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  const [result] = await db.update(chapters).set(body).where(eq(chapters.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "chapter.update", `Updated chapter ${result.number}`, "chapter", result.id);
+  return c.json({ success: true, data: result });
+});
+adminRoutes.delete("/chapters/:id", async (c) => {
+  const id = c.req.param("id");
+  const [result] = await db.delete(chapters).where(eq(chapters.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "chapter.delete", `Deleted chapter ${result.number}`, "chapter", result.id);
+  return c.json({ success: true, message: "Deleted" });
+});
+adminRoutes.put("/chapters/:id/pages", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  await db.delete(pages).where(eq(pages.chapterId, id));
+  if (body.pages && body.pages.length > 0) {
+    const pageRecords = body.pages.map((url, index2) => ({
+      chapterId: id,
+      pageNumber: index2 + 1,
+      imageUrl: url
+    }));
+    await db.insert(pages).values(pageRecords);
+    await db.update(chapters).set({ pageCount: body.pages.length }).where(eq(chapters.id, id));
+  } else {
+    await db.update(chapters).set({ pageCount: 0 }).where(eq(chapters.id, id));
+  }
+  const chapter = await db.query.chapters.findFirst({
+    where: eq(chapters.id, id),
+    with: { pages: { orderBy: (pages3, { asc: asc2 }) => [asc2(pages3.pageNumber)] } }
+  });
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "chapter.pages", `Updated pages for chapter`, "chapter", id);
+  return c.json({ success: true, data: chapter });
+});
+adminRoutes.get("/users", async (c) => {
+  const page = Number(c.req.query("page")) || 1;
+  const limit = Number(c.req.query("limit")) || 20;
+  const search = c.req.query("search");
+  const role = c.req.query("role");
+  const status = c.req.query("status");
+  const result = await AdminService.listUsers(page, limit, search, role, status);
+  return c.json({ success: true, ...result });
+});
+adminRoutes.patch("/users/:id/role", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  const [result] = await db.update(users).set({ role: body.role }).where(eq(users.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "user.role", `Changed role to ${body.role}`, "user", id);
+  return c.json({ success: true, data: { ...result, passwordHash: void 0 } });
+});
+adminRoutes.patch("/users/:id/status", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json();
+  const [result] = await db.update(users).set({ status: body.status }).where(eq(users.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "user.status", `Changed status to ${body.status}`, "user", id);
+  return c.json({ success: true, data: { ...result, passwordHash: void 0 } });
+});
+adminRoutes.delete("/users/:id", async (c) => {
+  const id = c.req.param("id");
+  const [result] = await db.delete(users).where(eq(users.id, id)).returning();
+  if (!result) return c.json({ success: false, message: "Not found" }, 404);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "user.delete", `Deleted user ${result.email}`, "user", id);
+  return c.json({ success: true, message: "Deleted" });
+});
+adminRoutes.get("/analytics", async (c) => {
+  const period = c.req.query("period") || "30d";
+  const data = await AdminService.getAnalytics(period);
+  return c.json({ success: true, data });
+});
+adminRoutes.get("/settings", async (c) => {
+  const data = await AdminService.getSettings();
+  return c.json({ success: true, data });
+});
+adminRoutes.put("/settings", async (c) => {
+  const body = await c.req.json();
+  const data = await AdminService.updateSettings(body);
+  const actor = getActor(c);
+  await AdminService.logActivity(actor.id, actor.name, "setting.update", `Updated site settings`, "setting", "default");
+  return c.json({ success: true, data });
+});
+
 // src/app.ts
 var app = new Hono2();
 app.use("*", logger());
@@ -87424,7 +87810,9 @@ app.use(
     origin: [
       "http://localhost:4321",
       "http://localhost:3000",
-      "https://mangaden.rejwanul.dev"
+      "https://mangaden.rejwanul.dev",
+      "https://manga-den-frontend.vercel.app",
+      "https://vm-manga-reader-frontend.vusercontent.net"
     ],
     credentials: true
   })
@@ -87449,6 +87837,7 @@ app.route("/api/upload", uploadRoutes);
 app.route("/api/pages", pagesRoutes);
 app.route("/api/user", userRoutes);
 app.route("/api/trending", trendingRoutes);
+app.route("/api/admin", adminRoutes);
 app.notFound((c) => {
   return c.json(
     {
